@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#8E8C86; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { opacity:.75; }
+</style>
+</helmet>
+
+<section style="padding:64px; font-family:Archivo, sans-serif;">
+  <div style="color:#fff; margin-bottom:40px; max-width:78ch;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:10px;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; background:#101010; color:#CDF23A; padding:6px 10px;">OPS</span>
+      <span style="font-size:24px; font-weight:700;">Back office</span>
+    </div>
+    <p style="margin:0; font-size:16px; line-height:1.6; opacity:.9;">Built in week 2, not month 6. Denser than the member app on purpose: these people live in it all day and want rows, not cards. Every money movement above the threshold needs a second approver who is a different user.</p>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:56px;">
+
+    <!-- POOL BOARD -->
+    <div>
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">/admin/pools · POOL BOARD</div>
+      <div data-screen-label="Pool board" style="width:1180px; background:#F2F0EA; color:#101010;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:13px 24px; background:#101010; color:#F2F0EA;">
+          <div style="display:flex; gap:22px; align-items:center; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">
+            <span style="font-weight:600;">OPS · ABUJA</span>
+            <a href="#" style="color:#CDF23A;">Pools</a><a href="#">Payments</a><a href="#">Refunds</a><a href="#">Intake</a><a href="#">Allocation</a><a href="#">Disputes</a><a href="#">Reconciliation</a><a href="#">Members</a>
+          </div>
+          <div style="display:flex; gap:16px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">
+            <span style="color:#E2A400;">3 refunds awaiting second approval</span><span>A. NWOSU · TUE 13 AUG 08:14</span>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:1px; background:#DCD9CF; border-bottom:1px solid #101010;">
+          <div style="background:#fff; padding:15px 20px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A;">OPERATING CASH, EXCL. ESCROW</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px;">₦4.12M</div></div>
+          <div style="background:#fff; padding:15px 20px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A;">HELD IN POOL ESCROW</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px;">₦1.88M</div></div>
+          <div style="background:#fff; padding:15px 20px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A;">LEDGER BALANCE CHECK</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px; color:#2F6B45;">0.00</div></div>
+          <div style="background:#fff; padding:15px 20px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A;">HOLD EXPIRY RATE, 7D</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px;">18%</div></div>
+          <div style="background:#fff; padding:15px 20px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A;">UNMATCHED TRANSFERS</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px; color:#8A3B1E;">6</div></div>
+        </div>
+
+        <div style="padding:22px 24px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:14px;">
+            <div>
+              <h1 style="font-family:'Archivo Black',sans-serif; font-size:28px; letter-spacing:-.03em; margin:0;">Nine live pools</h1>
+              <p style="margin:4px 0 0; font-size:14.5px; color:#54524A;">Two quotes expire before their pool closes. Those are the only two rows that need a decision today.</p>
+            </div>
+            <a href="#" style="background:#101010; color:#F2F0EA; font-size:14.5px; font-weight:600; padding:11px 17px;">Open a pool</a>
+          </div>
+
+          <div style="border:1px solid #101010; background:#fff;">
+            <div style="display:grid; grid-template-columns:1.5fr .9fr 1.2fr .9fr .9fr 1fr .8fr; font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#101010; color:#8C8A82;">
+              <div style="padding:9px 16px;">POOL</div><div style="padding:9px 10px;">STATE</div><div style="padding:9px 10px;">FILL</div><div style="padding:9px 10px;">CLOSES</div><div style="padding:9px 10px;">QUOTE EXP.</div><div style="padding:9px 10px;">ESCROW</div><div style="padding:9px 10px;">ACTION</div>
+            </div>
+            <div style="display:grid; grid-template-columns:1.5fr .9fr 1.2fr .9fr .9fr 1fr .8fr; font-size:13.5px;">
+              <div style="padding:11px 16px; border-bottom:1px solid #EDEAE1; font-weight:600;">A-2214 Ram · Lugbe</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">open</div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1;"><div style="height:7px; background:#EDEAE1; position:relative; margin-bottom:3px;"><div style="position:absolute; inset:0 10% 0 0; background:#101010;"></div></div><span style="font-family:'IBM Plex Mono',monospace; font-size:11px;">36/40</span></div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">Fri 18:00</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">Sat 12:00</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">₦302,400</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-size:12.5px; color:#54524A;">none</div>
+
+              <div style="padding:11px 16px; border-bottom:1px solid #EDEAE1; font-weight:600;">A-2231 Rice · Karu</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">open</div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1;"><div style="height:7px; background:#EDEAE1; position:relative; margin-bottom:3px;"><div style="position:absolute; inset:0 14% 0 0; background:#101010;"></div></div><span style="font-family:'IBM Plex Mono',monospace; font-size:11px;">12/14</span></div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">Thu 18:00</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#8A3B1E;">Fri 09:00</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">₦744,000</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1;"><a href="#" style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; border:1px solid #101010; padding:4px 7px;">EXTEND</a></div>
+
+              <div style="padding:11px 16px; border-bottom:1px solid #EDEAE1; font-weight:600; color:#8A3B1E;">A-2226 Catfish · Wuse</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#8A3B1E;">underfilled</div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1;"><div style="height:7px; background:#EDEAE1; position:relative; margin-bottom:3px;"><div style="position:absolute; inset:0 62% 0 0; background:#8A3B1E;"></div></div><span style="font-family:'IBM Plex Mono',monospace; font-size:11px;">19/50</span></div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">closed</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">expired</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">₦218,500</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1;"><a href="#" style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#8A3B1E; color:#fff; padding:4px 7px;">REFUND</a></div>
+
+              <div style="padding:11px 16px; border-bottom:1px solid #EDEAE1; font-weight:600;">A-2190 Cow · Kuje</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">allocating</div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1;"><div style="height:7px; background:#101010; margin-bottom:3px;"></div><span style="font-family:'IBM Plex Mono',monospace; font-size:11px;">40/40</span></div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-size:12.5px; color:#54524A;">none</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-size:12.5px; color:#54524A;">none</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">₦0 released</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1;"><a href="#" style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#101010; color:#CDF23A; padding:4px 7px;">ALLOCATE</a></div>
+
+              <div style="padding:11px 16px; border-bottom:1px solid #EDEAE1; font-weight:600;">A-2185 Beans · Karu</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">distributing</div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1;"><div style="height:7px; background:#101010; margin-bottom:3px;"></div><span style="font-family:'IBM Plex Mono',monospace; font-size:11px;">30/30</span></div>
+              <div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-size:12.5px; color:#54524A;">none</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-size:12.5px; color:#54524A;">none</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">released</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-size:12.5px; color:#54524A;">22 of 30 done</div>
+
+              <div style="padding:11px 16px; font-weight:600;">A-2244 Palm oil · Wuse</div><div style="padding:11px 10px; font-family:'IBM Plex Mono',monospace;">open</div>
+              <div style="padding:11px 10px;"><div style="height:7px; background:#EDEAE1; position:relative; margin-bottom:3px;"><div style="position:absolute; inset:0 55% 0 0; background:#101010;"></div></div><span style="font-family:'IBM Plex Mono',monospace; font-size:11px;">36/80</span></div>
+              <div style="padding:11px 10px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">Tue 18:00</div><div style="padding:11px 10px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">Wed 12:00</div><div style="padding:11px 10px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">₦331,200</div><div style="padding:11px 10px; font-size:12.5px; color:#54524A;">none</div>
+            </div>
+            <div style="padding:10px 16px; border-top:1px solid #DCD9CF; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">3 more rows · escrow total ₦1,880,000 reconciles to the ledger</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REFUNDS + UNMATCHED -->
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">/admin/refunds · DUAL APPROVAL</div>
+        <div data-screen-label="Refunds" style="width:766px; background:#F2F0EA; color:#101010; border:1px solid #101010;">
+          <div style="padding:13px 22px; background:#8A3B1E; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px;">REFUND QUEUE · SLA 24H FROM POOL CANCELLATION</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px;">OLDEST: 6H 22M ELAPSED</span>
+          </div>
+          <div style="padding:20px 22px; border-bottom:1px solid #101010;">
+            <h2 style="font-family:'Archivo Black',sans-serif; font-size:26px; letter-spacing:-.03em; margin:0 0 6px;">A-2226 Catfish · 19 members · ₦218,500</h2>
+            <p style="margin:0 0 16px; font-size:15px; line-height:1.55; color:#54524A;">19 of 50 slots paid against a threshold of 40. Shortfall policy on this pool is cancel, snapshotted when the pool opened, so it cannot be argued about now.</p>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#DCD9CF; border:1px solid #DCD9CF; margin-bottom:16px;">
+              <div style="background:#fff; padding:13px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">TO REFUND</div><div style="font-size:17px; font-weight:700;">₦218,500</div></div>
+              <div style="background:#fff; padding:13px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">PAYERS</div><div style="font-size:17px; font-weight:700;">17 accounts</div></div>
+              <div style="background:#fff; padding:13px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">VIA COORDINATOR</div><div style="font-size:17px; font-weight:700;">2 of 17</div></div>
+              <div style="background:#fff; padding:13px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">SLA REMAINING</div><div style="font-size:17px; font-weight:700; color:#8A3B1E;">17h 38m</div></div>
+            </div>
+            <div style="border:1px solid #101010; background:#fff; padding:16px; margin-bottom:16px;">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A; margin-bottom:10px;">APPROVALS · TWO DIFFERENT USERS REQUIRED</div>
+              <div style="display:flex; gap:12px;">
+                <div style="flex:1; border:1px solid #2F6B45; padding:12px;"><div style="font-size:14.5px; font-weight:600;">A. Nwosu, finance</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#2F6B45;">APPROVED 17:42</div></div>
+                <div style="flex:1; border:1px dashed #8A3B1E; padding:12px;"><div style="font-size:14.5px; font-weight:600;">Second approver</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8A3B1E;">WAITING · YOU CAN APPROVE</div></div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <a href="#" style="background:#101010; color:#F2F0EA; font-size:15.5px; font-weight:700; padding:14px 20px;">Approve and run 19 refunds</a>
+              <a href="#" style="border:1px solid #101010; font-size:15.5px; font-weight:600; padding:14px 18px;">Company absorbs and buys anyway</a>
+            </div>
+            <p style="margin:12px 0 0; font-family:'IBM Plex Mono',monospace; font-size:11px; line-height:1.6; color:#54524A;">Absorbing needs a written reason and goes to the founder queue. It has been used once, on a pool 2 slots short of 40.</p>
+          </div>
+          <div style="padding:20px 22px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:12px;">DESTINATION CHECK, BEFORE YOU APPROVE</div>
+            <div style="border:1px solid #101010; background:#fff;">
+              <div style="display:grid; grid-template-columns:1.3fr 1fr .9fr 1.1fr; font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#101010; color:#8C8A82;">
+                <div style="padding:9px 14px;">PAYER</div><div style="padding:9px 10px;">AMOUNT</div><div style="padding:9px 10px;">SLOTS</div><div style="padding:9px 10px;">NAME MATCH</div>
+              </div>
+              <div style="display:grid; grid-template-columns:1.3fr 1fr .9fr 1.1fr; font-size:13.5px;">
+                <div style="padding:10px 14px; border-bottom:1px solid #EDEAE1;">Tolu Okafor</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">₦11,500</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1;">1</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; color:#2F6B45;">matched</div>
+                <div style="padding:10px 14px; border-bottom:1px solid #EDEAE1;">Gwarinpa Coop <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A;">(coordinator)</span></div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">₦46,000</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1;">4</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; color:#2F6B45;">matched</div>
+                <div style="padding:10px 14px; border-bottom:1px solid #EDEAE1;">Musa Danjuma</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">₦23,000</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1;">2</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; color:#8A3B1E;">no account on file</div>
+                <div style="padding:10px 14px;">14 others</div><div style="padding:10px 10px; font-family:'IBM Plex Mono',monospace;">₦138,000</div><div style="padding:10px 10px;">12</div><div style="padding:10px 10px; color:#2F6B45;">all matched</div>
+              </div>
+            </div>
+            <p style="margin:12px 0 0; font-size:14.5px; line-height:1.6; color:#54524A;">Musa paid by card, so his refund reverses to the card and takes up to five working days. The SLA clock still shows 24 hours because that is when we send it, and his screen says the same thing.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">/admin/payments/unmatched</div>
+        <div data-screen-label="Unmatched payments" style="width:390px; min-height:660px; background:#F2F0EA; color:#101010; border:1px solid #101010; display:flex; flex-direction:column;">
+          <div style="padding:14px 18px; border-bottom:1px solid #101010;">
+            <div style="font-family:'Archivo Black',sans-serif; font-size:15px;">Unmatched transfers</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A; margin-top:3px;">6 OPEN · ₦74,300 UNAPPLIED</div>
+          </div>
+          <div style="padding:18px;">
+            <p style="margin:0 0 16px; font-size:14.5px; line-height:1.55; color:#54524A;">Money that arrived without a clean reference. It is never sent back automatically, because a member who paid and sees nothing will not try again.</p>
+            <div style="border:1px solid #101010; background:#fff; padding:15px; margin-bottom:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+                <span style="font-family:'Archivo Black',sans-serif; font-size:22px;">₦8,400</span>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A;">TUE 07:41</span>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A; line-height:1.7; margin-bottom:12px;">FROM: A IBRAHIM<br>GTB ····9014<br>NARRATION: "RAM POOL"</div>
+              <div style="background:#F2F0EA; border:1px solid #DCD9CF; padding:11px; font-size:13.5px; line-height:1.5; margin-bottom:12px;">
+                Best guess: <b>Aisha Ibrahim</b>, reserved 1 slot in A-2214 at 07:22, hold expired 07:42. Slot still available.
+              </div>
+              <div style="display:flex; gap:7px;">
+                <a href="#" style="flex:1; text-align:center; background:#CDF23A; border:1px solid #101010; font-size:13px; font-weight:700; padding:10px;">Apply to A-2214</a>
+                <a href="#" style="flex:1; text-align:center; border:1px solid #101010; font-size:13px; font-weight:600; padding:10px;">Hold as credit</a>
+              </div>
+            </div>
+            <div style="border:1px solid #101010; background:#fff; padding:15px; margin-bottom:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+                <span style="font-family:'Archivo Black',sans-serif; font-size:22px;">₦200</span>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A;">MON 19:02</span>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A; line-height:1.7; margin-bottom:12px;">FROM: T OKAFOR<br>STERLING ····4402<br>NARRATION: none</div>
+              <div style="background:#F2F0EA; border:1px solid #DCD9CF; padding:11px; font-size:13.5px; line-height:1.5; margin-bottom:12px;">
+                Overpayment on a ₦16,800 commitment already funded. Auto-resolves to credit at 21:00 unless you act.
+              </div>
+              <a href="#" style="display:block; text-align:center; border:1px solid #101010; font-size:13px; font-weight:600; padding:10px;">Let it become credit</a>
+            </div>
+            <div style="border:1px solid #8A3B1E; background:#fff; padding:15px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+                <span style="font-family:'Archivo Black',sans-serif; font-size:22px;">₦62,000</span>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8A3B1E;">SAT 11:20 · 3 DAYS OLD</span>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A; line-height:1.7; margin-bottom:12px;">FROM: SUNDAY ENTERPRISES<br>UBA ····7781<br>NARRATION: "RICE"</div>
+              <div style="background:#F2F0EA; border:1px solid #DCD9CF; padding:11px; font-size:13.5px; line-height:1.5; margin-bottom:12px;">
+                No member, no reservation, no phone number match. Someone was told our account number by a third party. Call before applying anything.
+              </div>
+              <a href="#" style="display:block; text-align:center; background:#8A3B1E; color:#fff; font-size:13px; font-weight:700; padding:10px;">Open an investigation</a>
+            </div>
+          </div>
+          <div style="margin-top:auto; padding:18px; border-top:1px solid #101010;">
+            <p style="margin:0; font-family:'IBM Plex Mono',monospace; font-size:11px; line-height:1.65; color:#54524A;">Every apply, credit and reversal here writes a ledger entry with your user id. Nothing in this queue can be resolved silently.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTAKE + ALLOCATION -->
+    <div>
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">/admin/intake/po-8859 AND /admin/pools/a-2190/allocation</div>
+      <div data-screen-label="Intake and allocation" style="width:1180px; background:#F2F0EA; color:#101010; display:grid; grid-template-columns:1fr 1.15fr;">
+        <div style="padding:24px 26px; border-right:1px solid #101010;">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:6px;">INTAKE AND QC · PO-8859 · KUJE YARD</div>
+          <h2 style="font-family:'Archivo Black',sans-serif; font-size:28px; letter-spacing:-.03em; margin:0 0 16px;">2 head of cattle, weighed on arrival</h2>
+          <div style="border:1px solid #101010; background:#fff; margin-bottom:16px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#101010; color:#8C8A82;">
+              <div style="padding:9px 14px;">ANIMAL</div><div style="padding:9px 10px;">LIVE WEIGHT</div><div style="padding:9px 10px;">QC</div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; font-size:14px;">
+              <div style="padding:11px 14px; border-bottom:1px solid #EDEAE1;">Tag 8859-A</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">238.0kg</div><div style="padding:11px 10px; border-bottom:1px solid #EDEAE1; color:#2F6B45; font-weight:600;">passed</div>
+              <div style="padding:11px 14px;">Tag 8859-B</div><div style="padding:11px 10px; font-family:'IBM Plex Mono',monospace;">226.5kg</div><div style="padding:11px 10px; color:#2F6B45; font-weight:600;">passed</div>
+            </div>
+          </div>
+          <div style="border:1px solid #101010; background:#fff; padding:16px; margin-bottom:16px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A; margin-bottom:10px;">USABLE YIELD AFTER BUTCHERING</div>
+            <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:13.5px; padding:7px 0; border-bottom:1px solid #EDEAE1;"><span>Nominal owed, 40 × 2.5kg</span><span>100.0kg</span></div>
+            <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:13.5px; padding:7px 0; border-bottom:1px solid #EDEAE1;"><span>Usable after QC</span><span>104.4kg</span></div>
+            <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:13.5px; padding:7px 0;"><span>Variance</span><span style="color:#2F6B45;">+4.4%, within ±8%</span></div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+            <div style="height:110px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); border:1px solid #101010; display:flex; align-items:flex-end; padding:8px; font-family:'IBM Plex Mono',monospace; font-size:10px; color:#54524A;">PHOTO · weighbridge ticket</div>
+            <div style="height:110px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); border:1px solid #101010; display:flex; align-items:flex-end; padding:8px; font-family:'IBM Plex Mono',monospace; font-size:10px; color:#54524A;">PHOTO · both animals, tags visible</div>
+          </div>
+          <a href="#" style="display:block; text-align:center; background:#101010; color:#F2F0EA; font-size:15.5px; font-weight:700; padding:14px;">Pass QC and release ₦162,900 balance</a>
+          <p style="margin:10px 0 0; font-family:'IBM Plex Mono',monospace; font-size:11px; line-height:1.6; color:#54524A;">Balance is due within 48 hours of this click. A rejection needs a reason code and a photo before it can be saved.</p>
+        </div>
+
+        <div style="padding:24px 26px;">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:6px;">ALLOCATION · A-2190 · SEED PUBLISHED 6 AUG</div>
+          <h2 style="font-family:'Archivo Black',sans-serif; font-size:28px; letter-spacing:-.03em; margin:0 0 8px;">Split 104.4kg between 40 members</h2>
+          <p style="margin:0 0 16px; font-size:15px; line-height:1.55; color:#54524A;">The seed was published two days before this ran, so nobody can claim we tuned the draw after seeing who was in the pool. Members who drew below average in A-2140 and A-2166 are prioritised for prime cuts.</p>
+          <div style="border:1px solid #101010; background:#fff; margin-bottom:14px;">
+            <div style="padding:11px 16px; background:#101010; color:#8C8A82; font-family:'IBM Plex Mono',monospace; font-size:11.5px; display:flex; justify-content:space-between;"><span>FAIRNESS CHECK</span><span>SEED a2190-7fd41c</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; padding:11px 16px; border-bottom:1px solid #EDEAE1;"><span>Prime share, target 40%</span><span style="font-family:'IBM Plex Mono',monospace;">39.6% mean, ±2.1%</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; padding:11px 16px; border-bottom:1px solid #EDEAE1;"><span>Secondary, target 40%</span><span style="font-family:'IBM Plex Mono',monospace;">40.2% mean</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; padding:11px 16px; border-bottom:1px solid #EDEAE1;"><span>Widest deviation from mean</span><span style="font-family:'IBM Plex Mono',monospace;">4.4%, member #31</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; padding:11px 16px;"><span>Members below nominal weight</span><span style="font-family:'IBM Plex Mono',monospace; color:#2F6B45;">0 of 40</span></div>
+          </div>
+          <div style="border:1px solid #101010; background:#fff; margin-bottom:14px;">
+            <div style="display:grid; grid-template-columns:.5fr 1.3fr .9fr .9fr 1fr; font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#101010; color:#8C8A82;">
+              <div style="padding:9px 14px;">#</div><div style="padding:9px 10px;">MEMBER</div><div style="padding:9px 10px;">WEIGHT</div><div style="padding:9px 10px;">PRIME</div><div style="padding:9px 10px;">PRIORITY</div>
+            </div>
+            <div style="display:grid; grid-template-columns:.5fr 1.3fr .9fr .9fr 1fr; font-size:13.5px;">
+              <div style="padding:10px 14px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#54524A;">01</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1;">Tolu Okafor</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">2.61kg</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">41%</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; color:#54524A;">normal</div>
+              <div style="padding:10px 14px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#54524A;">02</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1;">Aisha Bello</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">2.58kg</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">44%</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; color:#2F6B45;">prioritised</div>
+              <div style="padding:10px 14px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#54524A;">03</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1;">Hauwa Ibrahim</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">2.62kg</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">38%</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; color:#54524A;">normal</div>
+              <div style="padding:10px 14px; font-family:'IBM Plex Mono',monospace; color:#54524A;">31</div><div style="padding:10px 10px;">Musa Danjuma</div><div style="padding:10px 10px; font-family:'IBM Plex Mono',monospace;">2.52kg</div><div style="padding:10px 10px; font-family:'IBM Plex Mono',monospace; color:#8A3B1E;">35.6%</div><div style="padding:10px 10px; color:#2F6B45;">prioritised next</div>
+            </div>
+            <div style="padding:9px 14px; border-top:1px solid #DCD9CF; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">36 more rows · surplus 4.4kg as bonus portions to the 8 lowest prime shares</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <a href="#" style="background:#CDF23A; border:1px solid #101010; font-size:15.5px; font-weight:700; padding:14px 20px;">Publish to 40 members</a>
+            <a href="#" style="border:1px solid #101010; font-size:15.5px; font-weight:600; padding:14px 18px;">Override with a reason</a>
+          </div>
+          <p style="margin:10px 0 0; font-family:'IBM Plex Mono',monospace; font-size:11px; line-height:1.6; color:#54524A;">An override records who did it and why, and appears in the public pool report. There have been two, both for a member who could not eat pork.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPUTES + RECONCILIATION + MEMBER 360 -->
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">/admin/disputes</div>
+        <div data-screen-label="Disputes" style="width:576px; background:#F2F0EA; color:#101010; border:1px solid #101010;">
+          <div style="padding:13px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">Disputes · 7 open</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8A3B1E;">1 BREACHING SLA IN 4H</span>
+          </div>
+          <div style="padding:18px 20px;">
+            <div style="border:1px solid #8A3B1E; background:#fff; padding:16px; margin-bottom:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+                <span style="font-size:17px; font-weight:700;">Quality, spoiled catfish</span>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#8A3B1E; color:#fff; padding:4px 7px;">44H ELAPSED · SLA 48H</span>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:10px;">GRACE ADEYEMI · #A-2166 · LUGBE · 2 PHOTOS</div>
+              <p style="margin:0 0 12px; font-size:14.5px; line-height:1.55; color:#3A382F;">Two of five fish smelled off by the time she got home. Hub log shows her handover at 15:48, near closing, and the cold room was at 6°C rather than 4°C from 14:00.</p>
+              <div style="display:flex; gap:8px;">
+                <a href="#" style="background:#101010; color:#F2F0EA; font-size:13.5px; font-weight:600; padding:10px 14px;">Credit ₦4,600</a>
+                <a href="#" style="border:1px solid #101010; font-size:13.5px; font-weight:600; padding:10px 14px;">Replace next pool</a>
+                <a href="#" style="border:1px solid #101010; font-size:13.5px; font-weight:600; padding:10px 14px;">Refuse with reason</a>
+              </div>
+            </div>
+            <div style="border:1px solid #101010; background:#fff;">
+              <div style="display:grid; grid-template-columns:1.4fr 1.2fr .9fr .9fr; font-family:'IBM Plex Mono',monospace; font-size:11px; background:#101010; color:#8C8A82;">
+                <div style="padding:9px 12px;">MEMBER</div><div style="padding:9px 10px;">REASON</div><div style="padding:9px 10px;">POOL</div><div style="padding:9px 10px;">SLA</div>
+              </div>
+              <div style="display:grid; grid-template-columns:1.4fr 1.2fr .9fr .9fr; font-size:13.5px;">
+                <div style="padding:10px 12px; border-bottom:1px solid #EDEAE1;">Musa Danjuma</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1;">short weight</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12px;">A-2190</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12px;">31h left</div>
+                <div style="padding:10px 12px; border-bottom:1px solid #EDEAE1;">Blessing Okon</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1;">wrong cuts</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12px;">A-2185</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12px;">38h left</div>
+                <div style="padding:10px 12px; border-bottom:1px solid #EDEAE1;">Zainab Aliyu</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1;">nobody at hub</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12px;">A-2185</div><div style="padding:10px 10px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-size:12px;">12h left</div>
+                <div style="padding:10px 12px;">4 others</div><div style="padding:10px 10px; color:#54524A;">money, mixed</div><div style="padding:10px 10px; color:#54524A;">various</div><div style="padding:10px 10px; font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">&gt;24h</div>
+              </div>
+            </div>
+            <p style="margin:12px 0 0; font-size:14.5px; line-height:1.6; color:#54524A;">Dispute rate is 2.1% of handovers. Above 5% at any hub we stop opening pools there until we know why.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:24px;">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">/admin/reconciliation</div>
+          <div data-screen-label="Reconciliation" style="width:576px; background:#F2F0EA; color:#101010; border:1px solid #101010;">
+            <div style="padding:13px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">Daily reconciliation</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#2F6B45;">MON 12 AUG · BALANCED</span>
+            </div>
+            <div style="padding:18px 20px;">
+              <div style="border:1px solid #101010; background:#fff; font-family:'IBM Plex Mono',monospace; font-size:13.5px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; padding:11px 16px; border-bottom:1px solid #EDEAE1;"><span>PSP settlement received</span><span>₦486,200</span></div>
+                <div style="display:flex; justify-content:space-between; padding:11px 16px; border-bottom:1px solid #EDEAE1;"><span>Ledger credits, same window</span><span>₦486,200</span></div>
+                <div style="display:flex; justify-content:space-between; padding:11px 16px; border-bottom:1px solid #EDEAE1;"><span>PSP fees charged</span><span>₦7,293</span></div>
+                <div style="display:flex; justify-content:space-between; padding:11px 16px; border-bottom:1px solid #EDEAE1;"><span>Refunds sent</span><span>₦0</span></div>
+                <div style="display:flex; justify-content:space-between; padding:12px 16px; background:#F2F0EA;"><span>Drift</span><span style="color:#2F6B45;">₦0.00</span></div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#101010; border:1px solid #101010; margin-bottom:14px;">
+                <div style="background:#101010; color:#F2F0EA; padding:15px 16px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#8C8A82;">AVAILABLE TO SPEND</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px;">₦4.12M</div><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#8C8A82;">ESCROW EXCLUDED</div></div>
+                <div style="background:#fff; padding:15px 16px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">NOT OURS, MEMBERS' MONEY</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px;">₦1.88M</div><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">9 OPEN POOLS</div></div>
+              </div>
+              <p style="margin:0; font-size:14.5px; line-height:1.6; color:#54524A;">The big number on this page is deliberately the one with escrow taken out. Nobody in the company ever sees a cash figure that includes members' money, which is the whole point.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">/admin/members/4471 · SUPPORT VIEW</div>
+          <div data-screen-label="Member 360" style="width:576px; background:#F2F0EA; color:#101010; border:1px solid #101010;">
+            <div style="padding:13px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+              <div><span style="font-family:'Archivo Black',sans-serif; font-size:15px;">Tolu Okafor</span> <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">0803 441 9022</span></div>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; background:#101010; color:#E2A400; padding:4px 8px;">VIEW LOGGED · A. NWOSU</span>
+            </div>
+            <div style="padding:18px 20px;">
+              <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#DCD9CF; border:1px solid #DCD9CF; margin-bottom:14px;">
+                <div style="background:#fff; padding:12px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">POOLS</div><div style="font-size:17px; font-weight:700;">6</div></div>
+                <div style="background:#fff; padding:12px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">SPENT</div><div style="font-size:17px; font-weight:700;">₦174k</div></div>
+                <div style="background:#fff; padding:12px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">CREDIT</div><div style="font-size:17px; font-weight:700;">₦1,940</div></div>
+                <div style="background:#fff; padding:12px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#54524A;">DISPUTES</div><div style="font-size:17px; font-weight:700;">1</div></div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A; margin-bottom:10px;">EVERYTHING THAT HAPPENED, NEWEST FIRST</div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px;">
+                <div style="display:grid; grid-template-columns:88px 1fr; padding:8px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">TUE 07:41</span><span style="font-family:Archivo,sans-serif; font-size:14px;">Unmatched ₦8,400 from A IBRAHIM, possibly for her</span></div>
+                <div style="display:grid; grid-template-columns:88px 1fr; padding:8px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">MON 19:02</span><span style="font-family:Archivo,sans-serif; font-size:14px;">Overpaid ₦200, resolved to credit</span></div>
+                <div style="display:grid; grid-template-columns:88px 1fr; padding:8px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">SAT 10:31</span><span style="font-family:Archivo,sans-serif; font-size:14px;">Collected 2 slots at Kuje, 2.61kg and 2.58kg, codes 4471 and 8103</span></div>
+                <div style="display:grid; grid-template-columns:88px 1fr; padding:8px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">02 AUG</span><span style="font-family:Archivo,sans-serif; font-size:14px;">Paid ₦16,800 for A-2190, 12 beneficiaries named</span></div>
+                <div style="display:grid; grid-template-columns:88px 1fr; padding:8px 0;"><span style="color:#54524A;">24 JUL</span><span style="font-family:Archivo,sans-serif; font-size:14px;">Credited ₦740, yield shortfall on A-2214</span></div>
+              </div>
+              <div style="display:flex; gap:8px; margin-top:14px;">
+                <a href="#" style="border:1px solid #101010; font-size:13.5px; font-weight:600; padding:10px 14px;">Resend her code</a>
+                <a href="#" style="border:1px solid #101010; font-size:13.5px; font-weight:600; padding:10px 14px;">Add goodwill credit</a>
+                <a href="#" style="border:1px solid #8A3B1E; color:#8A3B1E; font-size:13.5px; font-weight:600; padding:10px 14px;">Suspend account</a>
+              </div>
+              <p style="margin:12px 0 0; font-family:'IBM Plex Mono',monospace; font-size:10.5px; line-height:1.6; color:#54524A;">Goodwill above ₦5,000 needs a second approver. Every action here is attributed to you by name.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

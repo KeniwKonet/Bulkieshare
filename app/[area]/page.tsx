@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SitePage } from "@/components/nav";
 import { AreaNotLive } from "@/components/area-not-live";
 import { Btn, PhotoPlaceholder, PoolProgress } from "@/components/ui";
-import { AREA_LABELS, LIVE_AREAS, formatNaira, openPoolsByArea, getPool, HUBS } from "@/lib/mock-data";
+import { AREA_LABELS, LIVE_AREAS, formatNaira, openPoolsByArea, getPool, HUBS, slotsLeftLabel } from "@/lib/mock-data";
 
 export async function generateMetadata({
   params,
@@ -68,10 +68,10 @@ export default async function AreaHome({ params }: { params: Promise<{ area: str
               <span className="bg-lime px-1.5 py-0.5">{featured.closesAt.toUpperCase()}</span>
             </div>
             <h3 className="font-display text-[27px] tracking-tight mb-1">{featured.title}</h3>
-            <p className="text-[14.5px] text-text-dim mb-4.5">{featured.description.split(".")[0]}. ±8%. Gwagwalada aggregator, nine deliveries to us.</p>
+            <p className="text-[14.5px] text-text-dim mb-4.5">{featured.description.split(/\.\s/)[0]}. ±8%. Gwagwalada aggregator, nine deliveries to us.</p>
             <div className="flex justify-between items-baseline mb-2">
               <span className="font-display text-[30px]">
-                {featured.totalSlots - featured.paidSlots - featured.reservedUnpaidSlots} slots left
+                {slotsLeftLabel(featured.totalSlots - featured.paidSlots - featured.reservedUnpaidSlots)}
               </span>
               <span className="font-mono text-[13px]">
                 {featured.paidSlots} / {featured.totalSlots} paid
@@ -131,7 +131,7 @@ export default async function AreaHome({ params }: { params: Promise<{ area: str
                   <div className="font-display text-[21px] tracking-tight">{p.title}</div>
                   <div className="flex justify-between items-baseline my-2.5">
                     <span className="font-bold">
-                      {p.totalSlots - p.paidSlots - p.reservedUnpaidSlots} slots left
+                      {slotsLeftLabel(p.totalSlots - p.paidSlots - p.reservedUnpaidSlots)}
                     </span>
                     <span className="font-mono text-[12px] text-text-dim">
                       {p.paidSlots} / {p.totalSlots}

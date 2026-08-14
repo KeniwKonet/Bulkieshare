@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#8E8C86; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { opacity: .75; }
+</style>
+</helmet>
+
+<section style="padding:64px; font-family:Archivo, sans-serif;">
+
+  <div style="color:#fff; margin-bottom:40px; max-width:74ch;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:10px;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; background:#101010; color:#CDF23A; padding:6px 10px;">2a</span>
+      <span style="font-size:24px; font-weight:700;">BulkieShare web app, phase 0</span>
+    </div>
+    <p style="margin:0; font-size:16px; line-height:1.6; opacity:.9;">Every page needed to run one real pool with real money, in variant <a href="BulkieShare Variants.dc.html" style="border-bottom:1px solid rgba(255,255,255,.5);">1a</a>'s language. Eleven screens: browse, pool detail, pay, beneficiaries, collection pass, settlement, cancelled-pool refund, the public pool report, the hub agent's offline queue and handover tool, and the credit ledger.</p>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:56px;">
+
+    <!-- 01 BROWSE -->
+    <div style="flex:0 0 auto;">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">01 · BROWSE · /abuja/pools</div>
+      <div data-screen-label="01 Browse pools" style="width:1180px; background:#F2F0EA; color:#101010;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 30px; border-bottom:1px solid #101010;">
+          <div style="display:flex; align-items:center; gap:28px;">
+            <div style="display:flex; align-items:center; gap:8px;"><div style="width:18px; height:18px; background:#101010;"></div><span style="font-family:'Archivo Black',sans-serif; font-size:17px; letter-spacing:-.02em;">BulkieShare</span></div>
+            <div style="display:flex; gap:22px; font-size:14.5px; font-weight:500;"><a href="#2a" style="border-bottom:2px solid #101010; padding-bottom:2px;">Open pools</a><a href="#2a">My pools</a><a href="#2a">Collections</a><a href="#2a">Credit</a></div>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; border:1px solid #101010; padding:7px 10px;">ABUJA · change</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; background:#101010; color:#CDF23A; padding:7px 10px;">CREDIT ₦1,940</span>
+            <div style="width:30px; height:30px; background:#101010; color:#F2F0EA; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;">TO</div>
+          </div>
+        </div>
+
+        <div style="padding:26px 30px 12px; display:flex; justify-content:space-between; align-items:flex-end;">
+          <div>
+            <h1 style="font-family:'Archivo Black',sans-serif; font-size:40px; letter-spacing:-.03em; margin:0;">Six pools open in Abuja</h1>
+            <p style="margin:6px 0 0; font-size:15.5px; color:#54524A;">Two close this week. Prices are set per hub, so what you see is what you pay at that hub.</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; background:#101010; color:#F2F0EA; padding:8px 12px;">ALL</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; border:1px solid #101010; padding:8px 12px;">MEAT</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; border:1px solid #101010; padding:8px 12px;">GRAINS</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; border:1px solid #101010; padding:8px 12px;">UNDER ₦10,000</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; border:1px solid #101010; padding:8px 12px;">WUSE HUB</span>
+          </div>
+        </div>
+
+        <div style="padding:14px 30px 30px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+
+          <div style="border:1px solid #101010; background:#fff; display:flex; flex-direction:column;">
+            <div style="height:120px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8A887E;">PHOTO · live ram at the farm</div>
+            <div style="padding:16px; display:flex; flex-direction:column; flex:1;">
+              <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11.5px; margin-bottom:8px;"><span>#A-2214 · LUGBE HUB</span><span style="background:#CDF23A; padding:2px 6px;">CLOSES FRI</span></div>
+              <div style="font-family:'Archivo Black',sans-serif; font-size:23px; letter-spacing:-.02em; line-height:1.05;">Live ram, medium</div>
+              <div style="font-size:13.5px; color:#54524A; margin:4px 0 14px;">≈2.5kg mixed cuts per slot, ±8%. Share date Sun 24 Aug.</div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;"><span style="font-weight:700; font-size:16px;">4 slots left</span><span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">36 / 40 paid</span></div>
+              <div style="position:relative; height:14px; border:1px solid #101010; background:#F2F0EA; margin-bottom:14px;">
+                <div style="position:absolute; inset:0 34% 0 0; background:#101010;"></div>
+                <div style="position:absolute; top:0; bottom:0; left:66%; width:8%; background:repeating-linear-gradient(45deg,#101010 0 2px,transparent 2px 6px);"></div>
+                <div style="position:absolute; top:-5px; bottom:-5px; left:40%; width:2px; background:#B4441F;"></div>
+              </div>
+              <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:flex-end;">
+                <div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">PER SLOT</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px;">₦8,400</div></div>
+                <a href="#2a" style="background:#CDF23A; border:1px solid #101010; font-size:14.5px; font-weight:700; padding:11px 16px;">Take a slot</a>
+              </div>
+            </div>
+          </div>
+
+          <div style="border:1px solid #101010; background:#fff; display:flex; flex-direction:column;">
+            <div style="height:120px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8A887E;">PHOTO · stacked rice bags</div>
+            <div style="padding:16px; display:flex; flex-direction:column; flex:1;">
+              <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11.5px; margin-bottom:8px;"><span>#A-2231 · KARU HUB</span><span style="border:1px solid #101010; padding:2px 6px;">CLOSES THU</span></div>
+              <div style="font-family:'Archivo Black',sans-serif; font-size:23px; letter-spacing:-.02em; line-height:1.05;">Rice, 50kg bag</div>
+              <div style="font-size:13.5px; color:#54524A; margin:4px 0 14px;">One whole bag per slot. Exact weight, no tolerance band.</div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;"><span style="font-weight:700; font-size:16px;">2 slots left</span><span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">12 / 14 paid</span></div>
+              <div style="position:relative; height:14px; border:1px solid #101010; background:#F2F0EA; margin-bottom:14px;">
+                <div style="position:absolute; inset:0 14% 0 0; background:#101010;"></div>
+                <div style="position:absolute; top:-5px; bottom:-5px; left:85.7%; width:2px; background:#B4441F;"></div>
+              </div>
+              <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:flex-end;">
+                <div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">PER SLOT</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px;">₦62,000</div></div>
+                <a href="#2a" style="background:#CDF23A; border:1px solid #101010; font-size:14.5px; font-weight:700; padding:11px 16px;">Take a slot</a>
+              </div>
+            </div>
+          </div>
+
+          <div style="border:1px solid #101010; background:#fff; display:flex; flex-direction:column;">
+            <div style="height:120px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8A887E;">PHOTO · live catfish pond</div>
+            <div style="padding:16px; display:flex; flex-direction:column; flex:1;">
+              <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11.5px; margin-bottom:8px;"><span>#A-2240 · WUSE HUB</span><span style="border:1px solid #101010; padding:2px 6px;">6 DAYS LEFT</span></div>
+              <div style="font-family:'Archivo Black',sans-serif; font-size:23px; letter-spacing:-.02em; line-height:1.05;">Catfish, live</div>
+              <div style="font-size:13.5px; color:#54524A; margin:4px 0 14px;">5 pieces per slot, 1.2kg average each. Killed and cleaned at the hub on request.</div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;"><span style="font-weight:700; font-size:16px;">31 slots left</span><span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">19 / 50 paid</span></div>
+              <div style="position:relative; height:14px; border:1px solid #101010; background:#F2F0EA; margin-bottom:14px;">
+                <div style="position:absolute; inset:0 62% 0 0; background:#101010;"></div>
+                <div style="position:absolute; top:-5px; bottom:-5px; left:80%; width:2px; background:#B4441F;"></div>
+              </div>
+              <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:flex-end;">
+                <div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">PER SLOT</div><div style="font-family:'Archivo Black',sans-serif; font-size:26px;">₦11,500</div></div>
+                <a href="#2a" style="background:#CDF23A; border:1px solid #101010; font-size:14.5px; font-weight:700; padding:11px 16px;">Take a slot</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin:0 30px 30px; border:1px solid #101010; background:#101010; color:#F2F0EA; padding:22px 26px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="max-width:60ch;">
+            <div style="font-family:'Archivo Black',sans-serif; font-size:22px; letter-spacing:-.02em; margin-bottom:5px;">Nothing near Enugu yet</div>
+            <p style="margin:0; font-size:14.5px; line-height:1.55; color:#B9B7AE;">You are seeing Abuja because that is where we run hubs. Tell us where you are and we will open there when enough people ask. 340 people in Enugu have.</p>
+          </div>
+          <a href="#2a" style="background:#CDF23A; color:#101010; font-size:15px; font-weight:700; padding:14px 22px;">Add me to the waitlist</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 POOL DETAIL -->
+    <div style="flex:0 0 auto;">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">02 · POOL DETAIL · /abuja/pools/a-2214</div>
+      <div data-screen-label="02 Pool detail" style="width:1180px; background:#F2F0EA; color:#101010;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 30px; border-bottom:1px solid #101010;">
+          <div style="display:flex; align-items:center; gap:8px;"><div style="width:18px; height:18px; background:#101010;"></div><span style="font-family:'Archivo Black',sans-serif; font-size:17px;">BulkieShare</span></div>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12.5px;">OPEN POOLS / #A-2214</span>
+          <div style="width:30px; height:30px; background:#101010; color:#F2F0EA; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;">TO</div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.35fr .95fr; gap:0;">
+          <div style="padding:30px; border-right:1px solid #101010;">
+            <div style="height:230px; background:repeating-linear-gradient(135deg,#EDEAE1 0 8px,#E3DFD4 8px 16px); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8A887E; margin-bottom:22px;">PHOTO · the actual ram, shot by our field agent at Gwagwalada</div>
+            <h1 style="font-family:'Archivo Black',sans-serif; font-size:44px; letter-spacing:-.03em; margin:0 0 10px; line-height:1;">Live ram, medium</h1>
+            <p style="margin:0 0 22px; font-size:17px; line-height:1.55; color:#3A382F; max-width:56ch;">One ram of 55kg to 62kg live weight, split forty ways after butchering at the hub. Each slot is roughly 2.5kg of mixed cuts. Supplied by Gwagwalada Livestock Aggregators, who have delivered nine orders to us with a 97% yield accuracy score.</p>
+
+            <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:#101010; border:1px solid #101010; margin-bottom:24px;">
+              <div style="background:#fff; padding:16px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">WHAT ONE SLOT IS</div><div style="font-size:17px; font-weight:600;">≈2.5kg mixed cuts</div></div>
+              <div style="background:#fff; padding:16px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">TOLERANCE BAND</div><div style="font-size:17px; font-weight:600;">±8%, credited if under</div></div>
+              <div style="background:#fff; padding:16px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">COLLECT AT</div><div style="font-size:17px; font-weight:600;">Lugbe hub, Sun 24 Aug</div></div>
+              <div style="background:#fff; padding:16px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">CUTS YOU GET</div><div style="font-size:17px; font-weight:600;">40% prime, 40% secondary, 20% trim</div></div>
+            </div>
+
+            <h3 style="font-size:21px; margin:0 0 10px; letter-spacing:-.01em;">How the cuts are shared out</h3>
+            <p style="margin:0 0 22px; font-size:15.5px; line-height:1.6; color:#54524A; max-width:62ch;">A ram does not divide into forty identical portions, so we run a published algorithm with a seed we post before allocation. If you drew below average last time, you are prioritised this time. The full allocation table goes to every member before anybody collects.</p>
+
+            <h3 style="font-size:21px; margin:0 0 10px; letter-spacing:-.01em;">If the pool does not fill</h3>
+            <p style="margin:0; font-size:15.5px; line-height:1.6; color:#54524A; max-width:62ch;">Sixteen slots is the minimum for this ram to be worth buying. Below that on Friday at 18:00, the pool is cancelled and every naira goes back to the account it came from within 24 hours. You can also pull out yourself any time before Wednesday 18:00.</p>
+          </div>
+
+          <div style="padding:30px;">
+            <div style="border:1px solid #101010; background:#fff; padding:22px; position:sticky; top:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+                <span style="font-family:'Archivo Black',sans-serif; font-size:30px;">4 slots left</span>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:13px;">36 / 40 paid</span>
+              </div>
+              <div style="position:relative; height:24px; border:1px solid #101010; background:#F2F0EA; margin-bottom:8px;">
+                <div style="position:absolute; inset:0 34% 0 0; background:#101010;"></div>
+                <div style="position:absolute; top:0; bottom:0; left:66%; width:8%; background:repeating-linear-gradient(45deg,#101010 0 2px,transparent 2px 6px);"></div>
+                <div style="position:absolute; top:-7px; bottom:-7px; left:40%; width:2px; background:#B4441F;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:6px;"><span>3 reserved, payment pending</span><span style="color:#B4441F;">threshold 16 passed</span></div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; background:#101010; color:#CDF23A; padding:8px 10px; text-align:center; margin-bottom:20px;">CLOSES IN 2 DAYS 04:11:32</div>
+
+              <div style="border-top:1px solid #DCD9CF; padding-top:16px; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <span style="font-size:15px; font-weight:600;">How many slots?</span>
+                  <div style="display:flex; border:1px solid #101010;">
+                    <span style="padding:8px 14px; border-right:1px solid #101010; font-size:16px;">−</span>
+                    <span style="padding:8px 18px; font-family:'IBM Plex Mono',monospace; font-size:16px; font-weight:600;">2</span>
+                    <span style="padding:8px 14px; border-left:1px solid #101010; font-size:16px;">+</span>
+                  </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:14.5px; padding:6px 0; color:#54524A;"><span>2 × ₦8,400</span><span style="font-family:'IBM Plex Mono',monospace;">₦16,800</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:14.5px; padding:6px 0; color:#54524A;"><span>Hub collection</span><span style="font-family:'IBM Plex Mono',monospace;">free</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:14.5px; padding:6px 0; color:#54524A; border-bottom:1px solid #DCD9CF;"><span>Store credit applied</span><span style="font-family:'IBM Plex Mono',monospace;">−₦1,940</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:baseline; padding-top:12px;"><span style="font-size:16px; font-weight:700;">To pay now, in full</span><span style="font-family:'Archivo Black',sans-serif; font-size:28px;">₦14,860</span></div>
+              </div>
+
+              <a href="#2a" style="display:block; text-align:center; background:#CDF23A; border:1px solid #101010; font-size:17px; font-weight:700; padding:16px; margin-bottom:10px;">Reserve 2 slots</a>
+              <p style="margin:0 0 14px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.6; color:#54524A;">Reserving holds your slots for 20 minutes while you transfer. No card needed.</p>
+              <label style="display:flex; gap:9px; align-items:flex-start; font-size:14px; line-height:1.5; color:#3A382F; border-top:1px solid #DCD9CF; padding-top:14px;">
+                <span style="width:16px; height:16px; border:1px solid #101010; background:#101010; color:#CDF23A; font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px;">✓</span>
+                <span>I can collect at <b>Lugbe hub on Sunday 24 August</b>. This pool is not delivered.</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 PAY -->
+    <div style="flex:0 0 auto;">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">03 · PAY · reservation held, 20 minute countdown</div>
+      <div data-screen-label="03 Pay" style="width:1180px; background:#F2F0EA; color:#101010;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 30px; border-bottom:1px solid #101010;">
+          <div style="display:flex; align-items:center; gap:8px;"><div style="width:18px; height:18px; background:#101010;"></div><span style="font-family:'Archivo Black',sans-serif; font-size:17px;">BulkieShare</span></div>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12.5px;">#A-2214 / PAYMENT</span>
+          <div style="width:30px; height:30px; background:#101010; color:#F2F0EA; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;">TO</div>
+        </div>
+
+        <div style="background:#B4441F; color:#fff; padding:14px 30px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:16px; font-weight:600;">Your 2 slots are held. Transfer within the next 18 minutes or they go back into the pool.</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:24px; font-weight:600;">18:04</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.25fr 1fr;">
+          <div style="padding:30px; border-right:1px solid #101010;">
+            <h1 style="font-family:'Archivo Black',sans-serif; font-size:34px; letter-spacing:-.03em; margin:0 0 6px;">Transfer ₦14,860 to your own account number</h1>
+            <p style="margin:0 0 24px; font-size:15.5px; color:#54524A; line-height:1.55; max-width:56ch;">This account belongs to you permanently. Any bank app works. We match the payment the moment it lands, so you do not need to send a reference or a screenshot.</p>
+
+            <div style="border:1px solid #101010; background:#fff; margin-bottom:16px;">
+              <div style="display:grid; grid-template-columns:1fr 1fr;">
+                <div style="padding:18px 20px; border-right:1px solid #DCD9CF; border-bottom:1px solid #DCD9CF;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">BANK</div><div style="font-size:20px; font-weight:600;">Wema Bank</div></div>
+                <div style="padding:18px 20px; border-bottom:1px solid #DCD9CF;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">ACCOUNT NAME</div><div style="font-size:20px; font-weight:600;">BulkieShare / T. Okafor</div></div>
+                <div style="padding:18px 20px; border-right:1px solid #DCD9CF;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">ACCOUNT NUMBER</div><div style="font-family:'IBM Plex Mono',monospace; font-size:30px; font-weight:600; letter-spacing:.04em;">7031 449 208</div></div>
+                <div style="padding:18px 20px; display:flex; align-items:flex-end;"><a href="#2a" style="background:#101010; color:#F2F0EA; font-size:15px; font-weight:600; padding:12px 20px;">Copy account number</a></div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-bottom:26px;">
+              <a href="#2a" style="border:1px solid #101010; font-size:14.5px; font-weight:600; padding:12px 18px;">Pay by USSD instead</a>
+              <a href="#2a" style="border:1px solid #101010; font-size:14.5px; font-weight:600; padding:12px 18px;">Pay by card</a>
+              <a href="#2a" style="border:1px solid #101010; font-size:14.5px; font-weight:600; padding:12px 18px;">Pay cash at Lugbe hub</a>
+            </div>
+
+            <div style="border:1px solid #101010; padding:20px; background:#fff;">
+              <div style="font-size:17px; font-weight:700; margin-bottom:12px;">If something goes wrong with the transfer</div>
+              <div style="display:flex; flex-direction:column; gap:11px; font-size:14.5px; line-height:1.5; color:#3A382F;">
+                <div style="display:flex; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; color:#54524A; flex-shrink:0;">LATE</span><span>If your money arrives after the 20 minutes, we re-reserve your slots automatically when any remain. If the pool filled, it becomes store credit and we tell you immediately. We never send it back.</span></div>
+                <div style="display:flex; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; color:#54524A; flex-shrink:0;">SHORT</span><span>Send less than ₦14,860 and we hold it as credit and tell you what is outstanding.</span></div>
+                <div style="display:flex; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; color:#54524A; flex-shrink:0;">TWICE</span><span>Pay twice and the second payment becomes credit the same day.</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:30px;">
+            <div style="border:1px solid #101010; background:#fff; padding:22px; margin-bottom:16px;">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:14px;">WAITING FOR YOUR TRANSFER</div>
+              <div style="display:flex; flex-direction:column; gap:14px;">
+                <div style="display:flex; gap:12px; align-items:flex-start;"><div style="width:18px; height:18px; background:#101010; color:#CDF23A; font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</div><div><div style="font-size:15px; font-weight:600;">Slots reserved</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">08:14:02 · 2 slots, #A-2214</div></div></div>
+                <div style="display:flex; gap:12px; align-items:flex-start;"><div style="width:18px; height:18px; border:1px solid #101010; background:repeating-linear-gradient(45deg,#101010 0 2px,transparent 2px 5px); flex-shrink:0;"></div><div><div style="font-size:15px; font-weight:600;">Payment landing</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">bank transfers usually clear in under 2 minutes</div></div></div>
+                <div style="display:flex; gap:12px; align-items:flex-start; opacity:.45;"><div style="width:18px; height:18px; border:1px solid #101010; flex-shrink:0;"></div><div><div style="font-size:15px; font-weight:600;">Slots confirmed</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">you get a WhatsApp message</div></div></div>
+                <div style="display:flex; gap:12px; align-items:flex-start; opacity:.45;"><div style="width:18px; height:18px; border:1px solid #101010; flex-shrink:0;"></div><div><div style="font-size:15px; font-weight:600;">Name who collects each slot</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">editable until Fri 18:00</div></div></div>
+              </div>
+            </div>
+            <div style="border:1px solid #101010; background:#101010; color:#F2F0EA; padding:20px;">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8C8A82; margin-bottom:8px;">YOUR MONEY UNTIL SHARE DAY</div>
+              <p style="margin:0; font-size:14.5px; line-height:1.6; color:#B9B7AE;">₦14,860 sits in a holding account that is separate from the money we run the business on. It moves twice only: to the farmer once forty slots are paid, or back to you if this pool is cancelled.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 BENEFICIARIES -->
+    <div style="flex:0 0 auto;">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">04 · WHO COLLECTS · payer ≠ recipient is the normal case</div>
+      <div data-screen-label="04 Beneficiaries" style="width:1180px; background:#F2F0EA; color:#101010;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 30px; border-bottom:1px solid #101010;">
+          <div style="display:flex; align-items:center; gap:8px;"><div style="width:18px; height:18px; background:#101010;"></div><span style="font-family:'Archivo Black',sans-serif; font-size:17px;">BulkieShare</span></div>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12.5px;">#A-2190 / 12 SLOTS / WHO COLLECTS</span>
+          <div style="width:30px; height:30px; background:#101010; color:#F2F0EA; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;">TO</div>
+        </div>
+
+        <div style="background:#CDF23A; padding:14px 30px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:16px; font-weight:600;">₦100,800 received. 12 slots confirmed in the Kuje cow pool.</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12.5px;">RECEIPT #R-88412 SENT ON WHATSAPP</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.4fr 1fr;">
+          <div style="padding:30px; border-right:1px solid #101010;">
+            <h1 style="font-family:'Archivo Black',sans-serif; font-size:34px; letter-spacing:-.03em; margin:0 0 6px;">Name the twelve people collecting</h1>
+            <p style="margin:0 0 22px; font-size:15.5px; color:#54524A; line-height:1.55; max-width:58ch;">Each person gets their own code and their own share day message, so nobody has to stand at the hub holding twelve codes. You can change these names until Friday 18:00.</p>
+
+            <div style="border:1px solid #101010; background:#fff;">
+              <div style="display:grid; grid-template-columns:36px 1.3fr 1fr 90px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#101010; color:#8C8A82;">
+                <div style="padding:10px 12px;">#</div><div style="padding:10px 12px;">NAME</div><div style="padding:10px 12px;">PHONE</div><div style="padding:10px 12px;">CODE</div>
+              </div>
+              <div style="display:grid; grid-template-columns:36px 1.3fr 1fr 90px; font-size:14.5px;">
+                <div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#54524A;">01</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1;">Tolu Okafor <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">(you)</span></div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">0803 441 9022</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-weight:600;">4471</div>
+                <div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#54524A;">02</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1;">Aisha Bello</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">0812 007 5510</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-weight:600;">8103</div>
+                <div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#54524A;">03</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1;">Hauwa Ibrahim</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">0705 332 8841</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-weight:600;">2210</div>
+                <div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#54524A;">04</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1;">Ngozi Eze</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace;">0906 118 2043</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; font-weight:600;">8845</div>
+                <div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#54524A;">05</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; color:#B4441F;">Waiting for a name</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#A8A69C;">add a phone number</div><div style="padding:11px 12px; border-bottom:1px solid #EDEAE1; font-family:'IBM Plex Mono',monospace; color:#A8A69C;">—</div>
+                <div style="padding:11px 12px; font-family:'IBM Plex Mono',monospace; color:#54524A;">06</div><div style="padding:11px 12px; color:#B4441F;">Waiting for a name</div><div style="padding:11px 12px; font-family:'IBM Plex Mono',monospace; color:#A8A69C;">add a phone number</div><div style="padding:11px 12px; font-family:'IBM Plex Mono',monospace; color:#A8A69C;">—</div>
+              </div>
+              <div style="padding:12px; border-top:1px solid #DCD9CF; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">6 more slots below · 4 of 12 named</span>
+                <a href="#2a" style="border:1px solid #101010; font-size:14px; font-weight:600; padding:9px 14px;">Import from my WhatsApp group</a>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:30px;">
+            <div style="border:1px solid #101010; background:#101010; color:#F2F0EA; padding:20px; margin-bottom:16px;">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8C8A82; margin-bottom:8px;">ONE THING TO BE CLEAR ABOUT</div>
+              <p style="margin:0; font-size:15px; line-height:1.6; color:#B9B7AE;">If this pool is cancelled, all ₦100,800 goes back to <b style="color:#F2F0EA;">your</b> account, not split between the twelve. You collected the cash, so you return it. This is also in the terms you agreed to.</p>
+            </div>
+            <div style="border:1px solid #101010; background:#fff; padding:20px; margin-bottom:16px;">
+              <div style="font-size:16px; font-weight:700; margin-bottom:12px;">What each person will receive</div>
+              <p style="margin:0 0 12px; font-size:14.5px; line-height:1.55; color:#54524A;">A WhatsApp message on Thursday with their code, their 20 minute window at Kuje hub, and what to bring.</p>
+              <div style="background:#F2F0EA; border:1px solid #DCD9CF; padding:14px; font-size:14px; line-height:1.6;">
+                <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A; margin-bottom:6px;">PREVIEW</div>
+                Hauwa, Tolu bought you a share of the Kuje cow pool. Collect at Kuje hub on Sat 16 Aug between 10:20 and 10:40. Your code is 2210. Bring a cooler if you have one.
+              </div>
+            </div>
+            <a href="#2a" style="display:block; text-align:center; background:#CDF23A; border:1px solid #101010; font-size:16px; font-weight:700; padding:15px;">Send all twelve their codes</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 COLLECTION PASS -->
+    <div style="flex:0 0 auto; display:flex; gap:24px; align-items:flex-start;">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">05 · COLLECTION PASS · what the member opens at the hub</div>
+        <div data-screen-label="05 Collection pass" style="width:390px; min-height:720px; background:#F2F0EA; color:#101010; display:flex; flex-direction:column; border:1px solid #101010;">
+          <div style="padding:16px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">Collection pass</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px;">WORKS OFFLINE</span>
+          </div>
+          <div style="padding:24px 20px; text-align:center; border-bottom:1px solid #101010;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">READ THIS TO THE AGENT</div>
+            <div style="font-family:'Archivo Black',sans-serif; font-size:72px; letter-spacing:.06em; line-height:1.1;">4471</div>
+            <div style="width:130px; height:130px; margin:8px auto 0; background:repeating-linear-gradient(45deg,#101010 0 4px,#F2F0EA 4px 8px); border:6px solid #F2F0EA; outline:1px solid #101010;"></div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-family:'Archivo Black',sans-serif; font-size:24px; letter-spacing:-.02em; line-height:1.1; margin-bottom:14px;">Kuje hub<br>Saturday 16 Aug, 10:20 to 10:40</div>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:14.5px;">
+              <div style="display:flex; justify-content:space-between; padding-bottom:9px; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">Pool</span><span style="font-weight:600;">Cow, Kuje · #A-2190</span></div>
+              <div style="display:flex; justify-content:space-between; padding-bottom:9px; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">Your portion</span><span style="font-weight:600;">≈2.5kg mixed cuts</span></div>
+              <div style="display:flex; justify-content:space-between; padding-bottom:9px; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">Paid</span><span style="font-weight:600; font-family:'IBM Plex Mono',monospace;">₦8,400</span></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:#54524A;">Landmark</span><span style="font-weight:600; text-align:right; max-width:60%;">Green gate opposite the mosque, Kuje market road</span></div>
+            </div>
+          </div>
+          <div style="margin-top:auto; padding:20px; border-top:1px solid #101010;">
+            <p style="margin:0 0 12px; font-size:14px; line-height:1.55; color:#3A382F;">Watch the scale. If your portion comes under 2.30kg the difference is credited to you before you leave.</p>
+            <div style="display:flex; gap:8px;">
+              <a href="#2a" style="flex:1; text-align:center; border:1px solid #101010; font-size:14px; font-weight:600; padding:12px;">Get directions</a>
+              <a href="#2a" style="flex:1; text-align:center; background:#101010; color:#F2F0EA; font-size:14px; font-weight:600; padding:12px;">Change my window</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">06 · SETTLEMENT · the pool came in under nominal</div>
+        <div data-screen-label="06 Settlement" style="width:390px; min-height:720px; background:#F2F0EA; color:#101010; display:flex; flex-direction:column; border:1px solid #101010;">
+          <div style="padding:16px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">#A-2214 complete</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px;">24 AUG</span>
+          </div>
+          <div style="padding:24px 20px; border-bottom:1px solid #101010;">
+            <h2 style="font-family:'Archivo Black',sans-serif; font-size:30px; letter-spacing:-.03em; line-height:1.05; margin:0 0 10px;">Your portion came to 2.28kg, not 2.50kg.</h2>
+            <p style="margin:0 0 18px; font-size:15px; line-height:1.55; color:#3A382F;">The ram dressed out lighter than the farm weight suggested. That is 8.8% under nominal, outside the ±8% band we published, so we have credited the difference. You did not have to ask.</p>
+            <div style="background:#CDF23A; border:1px solid #101010; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:15px; font-weight:600;">Credited to you</span>
+              <span style="font-family:'Archivo Black',sans-serif; font-size:30px;">₦740</span>
+            </div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:12px;">HOW WE GOT THERE</div>
+            <div style="display:flex; flex-direction:column; font-family:'IBM Plex Mono',monospace; font-size:13.5px;">
+              <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span>Live weight at intake</span><span>57.4kg</span></div>
+              <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span>Usable after butchering</span><span>91.2kg total</span></div>
+              <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span>Nominal, 40 × 2.5kg</span><span>100.0kg</span></div>
+              <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span>Variance</span><span style="color:#B4441F;">−8.8%</span></div>
+              <div style="display:flex; justify-content:space-between; padding:9px 0;"><span>Your weighed portion</span><span>2.28kg</span></div>
+            </div>
+            <div style="height:96px; margin-top:16px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#8A887E; text-align:center;">PHOTO · your portion on the scale,<br>2.28kg readout, taken at handover</div>
+          </div>
+          <div style="margin-top:auto; padding:20px; border-top:1px solid #101010; display:flex; gap:8px;">
+            <a href="#2a" style="flex:1; text-align:center; border:1px solid #101010; font-size:14px; font-weight:600; padding:12px;">Something is wrong</a>
+            <a href="#2a" style="flex:1; text-align:center; background:#101010; color:#F2F0EA; font-size:14px; font-weight:600; padding:12px;">Use credit on a pool</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">07 · POOL CANCELLED · refund in progress</div>
+        <div data-screen-label="07 Refund" style="width:390px; min-height:720px; background:#F2F0EA; color:#101010; display:flex; flex-direction:column; border:1px solid #101010;">
+          <div style="padding:16px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">#A-2226 cancelled</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#B4441F; color:#fff; padding:4px 7px;">REFUNDING</span>
+          </div>
+          <div style="padding:24px 20px; border-bottom:1px solid #101010;">
+            <h2 style="font-family:'Archivo Black',sans-serif; font-size:30px; letter-spacing:-.03em; line-height:1.05; margin:0 0 10px;">The catfish pool did not fill. Your money is on its way back.</h2>
+            <p style="margin:0; font-size:15px; line-height:1.55; color:#3A382F;">19 people joined and we needed 40 to make the price work. We did not buy anything, so there is nothing to split. ₦11,500 is going back to the Sterling account you paid from.</p>
+          </div>
+          <div style="padding:20px; border-bottom:1px solid #101010;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:14px;">REFUND, PROMISED WITHIN 24 HOURS</div>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; gap:12px;"><div style="width:18px; height:18px; background:#101010; color:#CDF23A; font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</div><div><div style="font-size:15px; font-weight:600;">Pool closed underfilled</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">Wed 17:00</div></div></div>
+              <div style="display:flex; gap:12px;"><div style="width:18px; height:18px; background:#101010; color:#CDF23A; font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</div><div><div style="font-size:15px; font-weight:600;">Refund approved by two people</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">Wed 17:42</div></div></div>
+              <div style="display:flex; gap:12px;"><div style="width:18px; height:18px; border:1px solid #101010; background:repeating-linear-gradient(45deg,#101010 0 2px,transparent 2px 5px); flex-shrink:0;"></div><div><div style="font-size:15px; font-weight:600;">Sent to your bank</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">Wed 17:44 · usually under an hour</div></div></div>
+            </div>
+          </div>
+          <div style="padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;"><span style="font-size:15px; color:#54524A;">Refund amount</span><span style="font-family:'Archivo Black',sans-serif; font-size:30px;">₦11,500</span></div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#54524A; margin-top:4px;">TO STERLING ····4402 · REF R-88510</div>
+          </div>
+          <div style="margin-top:auto; padding:20px; border-top:1px solid #101010;">
+            <p style="margin:0 0 12px; font-size:14px; line-height:1.55; color:#3A382F;">The Wuse hub has a 50 slot catfish pool opening Monday at the same price. Nineteen of you are already interested.</p>
+            <a href="#2a" style="display:block; text-align:center; background:#CDF23A; border:1px solid #101010; font-size:15px; font-weight:700; padding:14px;">Tell me when it opens</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 08 TRANSPARENCY REPORT -->
+    <div style="flex:0 0 auto;">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">08 · PUBLIC POOL REPORT · /abuja/pools/a-2190/report</div>
+      <div data-screen-label="08 Pool report" style="width:1180px; background:#F2F0EA; color:#101010;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 30px; border-bottom:1px solid #101010;">
+          <div style="display:flex; align-items:center; gap:8px;"><div style="width:18px; height:18px; background:#101010;"></div><span style="font-family:'Archivo Black',sans-serif; font-size:17px;">BulkieShare</span></div>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12.5px;">PUBLIC REPORT · #A-2190 · ANYONE CAN READ THIS</span>
+          <a href="#2a" style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; border:1px solid #101010; padding:7px 10px;">DOWNLOAD CSV</a>
+        </div>
+
+        <div style="padding:30px; display:grid; grid-template-columns:1fr 1fr; gap:40px; border-bottom:1px solid #101010;">
+          <div>
+            <h1 style="font-family:'Archivo Black',sans-serif; font-size:38px; letter-spacing:-.03em; margin:0 0 12px; line-height:1.03;">Cow, Kuje aggregator, 40 slots, completed 8 August</h1>
+            <p style="margin:0 0 20px; font-size:16px; line-height:1.6; color:#3A382F; max-width:52ch;">Everything below was recorded at the hub on the day and published unedited. Weights come off the scale photo, not from our estimate. This is what we mean when we say a pool is auditable.</p>
+            <div style="display:flex; gap:32px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#54524A;">
+              <div><div style="font-family:'Archivo Black',sans-serif; font-size:26px; color:#101010;">40 / 40</div>slots paid</div>
+              <div><div style="font-family:'Archivo Black',sans-serif; font-size:26px; color:#101010;">₦336,000</div>collected</div>
+              <div><div style="font-family:'Archivo Black',sans-serif; font-size:26px; color:#101010;">+4.4%</div>yield variance</div>
+              <div><div style="font-family:'Archivo Black',sans-serif; font-size:26px; color:#101010;">40</div>handovers, 0 disputes</div>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="height:130px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#8A887E;">PHOTO · intake, live weight</div>
+            <div style="height:130px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#8A887E;">PHOTO · QC verdict sheet</div>
+            <div style="height:130px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#8A887E;">PHOTO · portions on the bench</div>
+            <div style="height:130px; background:repeating-linear-gradient(135deg,#EDEAE1 0 7px,#E3DFD4 7px 14px); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#8A887E;">PHOTO · scale readout, slot 12</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr;">
+          <div style="padding:30px; border-right:1px solid #101010;">
+            <h3 style="font-size:20px; margin:0 0 14px;">Yield reconciliation</h3>
+            <div style="border:1px solid #101010; background:#fff; font-family:'IBM Plex Mono',monospace; font-size:13.5px;">
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #EDEAE1;"><span>Live weight at intake</span><span>238.0kg</span></div>
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #EDEAE1;"><span>Usable after butchering and QC</span><span>104.4kg</span></div>
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #EDEAE1;"><span>Nominal owed, 40 × 2.5kg</span><span>100.0kg</span></div>
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #EDEAE1;"><span>Variance</span><span style="color:#2F6B45;">+4.4%, within ±8%</span></div>
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; background:#F2F0EA;"><span>Surplus 4.4kg</span><span>distributed as bonus portions</span></div>
+            </div>
+            <h3 style="font-size:20px; margin:26px 0 14px;">Grade fairness</h3>
+            <p style="margin:0 0 14px; font-size:15px; line-height:1.6; color:#54524A;">Allocation seed <b style="font-family:'IBM Plex Mono',monospace;">a2190-7fd41c</b>, published 6 August, two days before allocation ran. Members who drew below average grades in #A-2140 and #A-2166 were prioritised for prime cuts here.</p>
+            <div style="border:1px solid #101010; background:#fff; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+              <div style="display:flex; justify-content:space-between; padding:11px 16px; border-bottom:1px solid #EDEAE1;"><span>Prime share, target 40%</span><span>39.6% mean, ±2.1%</span></div>
+              <div style="display:flex; justify-content:space-between; padding:11px 16px; border-bottom:1px solid #EDEAE1;"><span>Secondary, target 40%</span><span>40.2% mean</span></div>
+              <div style="display:flex; justify-content:space-between; padding:11px 16px;"><span>Widest member deviation</span><span>4.4% from mean</span></div>
+            </div>
+          </div>
+          <div style="padding:30px;">
+            <h3 style="font-size:20px; margin:0 0 14px;">Where the ₦336,000 went</h3>
+            <div style="border:1px solid #101010; background:#fff; font-family:'IBM Plex Mono',monospace; font-size:13.5px; margin-bottom:22px;">
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #EDEAE1;"><span>Paid to Kuje Livestock Aggregators</span><span>₦268,000</span></div>
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #EDEAE1;"><span>Haulage, Kuje to hub</span><span>₦14,500</span></div>
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #EDEAE1;"><span>Hub and butchering, 4 hours</span><span>₦11,000</span></div>
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #EDEAE1;"><span>Payment processing, 1.5%</span><span>₦5,040</span></div>
+              <div style="display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #EDEAE1;"><span>Shrinkage and yield credits</span><span>₦9,800</span></div>
+              <div style="display:flex; justify-content:space-between; padding:14px 16px; background:#101010; color:#CDF23A;"><span>Our margin</span><span>₦27,660 · 8.2%</span></div>
+            </div>
+            <h3 style="font-size:20px; margin:0 0 14px;">Timeline</h3>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#3A382F;">
+              <div style="display:grid; grid-template-columns:110px 1fr; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">28 JUL 09:00</span><span>Pool opened, quote held to 6 Aug</span></div>
+              <div style="display:grid; grid-template-columns:110px 1fr; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">30 JUL 14:20</span><span>Threshold of 16 slots passed</span></div>
+              <div style="display:grid; grid-template-columns:110px 1fr; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">02 AUG 11:05</span><span>40 of 40 paid, pool locked</span></div>
+              <div style="display:grid; grid-template-columns:110px 1fr; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">03 AUG 08:30</span><span>PO issued, 40% deposit released</span></div>
+              <div style="display:grid; grid-template-columns:110px 1fr; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">07 AUG 06:40</span><span>Delivered to Kuje hub, QC passed</span></div>
+              <div style="display:grid; grid-template-columns:110px 1fr; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">08 AUG 09:00</span><span>40 handovers, last at 13:12</span></div>
+              <div style="display:grid; grid-template-columns:110px 1fr; padding:9px 0;"><span style="color:#54524A;">09 AUG 10:00</span><span>Supplier balance paid, pool completed</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 09 HUB AGENT -->
+    <div style="flex:0 0 auto; display:flex; gap:24px; align-items:flex-start;">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">09 · HUB AGENT · handover queue, offline</div>
+        <div data-screen-label="09 Hub agent queue" style="width:390px; min-height:720px; background:#101010; color:#F2F0EA; display:flex; flex-direction:column;">
+          <div style="padding:14px 18px; background:#B4441F; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600;">OFFLINE · 6 HANDOVERS QUEUED</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px;">SYNCS WHEN BACK</span>
+          </div>
+          <div style="padding:18px; border-bottom:1px solid #333;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8C8A82;">KUJE HUB · SAT 16 AUG · POOL #A-2190</div>
+            <div style="font-family:'Archivo Black',sans-serif; font-size:28px; letter-spacing:-.02em; margin-top:4px;">18 of 40 done</div>
+            <div style="height:12px; border:1px solid #4A4A44; margin-top:10px; position:relative;"><div style="position:absolute; inset:0 55% 0 0; background:#CDF23A;"></div></div>
+          </div>
+          <div style="padding:18px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8C8A82; margin-bottom:12px;">10:20 TO 10:40 WINDOW</div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="border:1px solid #CDF23A; background:#1A1A18; padding:14px; display:flex; justify-content:space-between; align-items:center;">
+                <div><div style="font-size:17px; font-weight:700;">Tolu Okafor</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8C8A82;">2 slots · codes 4471, 8103</div></div>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#CDF23A; color:#101010; padding:5px 8px;">HERE</span>
+              </div>
+              <div style="border:1px solid #4A4A44; padding:14px; display:flex; justify-content:space-between; align-items:center;">
+                <div><div style="font-size:17px; font-weight:600;">Hauwa Ibrahim</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8C8A82;">1 slot · code 2210</div></div>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8C8A82;">WAITING</span>
+              </div>
+              <div style="border:1px solid #4A4A44; padding:14px; display:flex; justify-content:space-between; align-items:center;">
+                <div><div style="font-size:17px; font-weight:600;">Ngozi Eze</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8C8A82;">1 slot · code 8845</div></div>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8C8A82;">WAITING</span>
+              </div>
+              <div style="border:1px solid #4A4A44; padding:14px; display:flex; justify-content:space-between; align-items:center; opacity:.5;">
+                <div><div style="font-size:17px; font-weight:600;">Musa Danjuma</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8C8A82;">1 slot · collected 10:04</div></div>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px;">DONE</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:auto; padding:18px; border-top:1px solid #333;">
+            <a href="#2a" style="display:block; text-align:center; background:#CDF23A; color:#101010; font-size:17px; font-weight:700; padding:16px;">Enter a code</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">10 · HUB AGENT · weigh and hand over</div>
+        <div data-screen-label="10 Hub agent handover" style="width:390px; min-height:720px; background:#101010; color:#F2F0EA; display:flex; flex-direction:column;">
+          <div style="padding:14px 18px; background:#B4441F; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600;">OFFLINE · WILL SYNC</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px;">CODE 4471 VALID</span>
+          </div>
+          <div style="padding:18px; border-bottom:1px solid #333;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8C8A82;">SLOT 1 OF 2 · TOLU OKAFOR</div>
+            <div style="font-family:'Archivo Black',sans-serif; font-size:26px; letter-spacing:-.02em; margin-top:4px;">Weigh the portion</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#8C8A82; margin-top:6px;">Nominal 2.50kg · accept 2.30 to 2.70kg</div>
+          </div>
+          <div style="padding:18px; border-bottom:1px solid #333;">
+            <div style="border:1px solid #4A4A44; background:#1A1A18; padding:20px; text-align:center;">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8C8A82;">TYPE WHAT THE SCALE SAYS</div>
+              <div style="font-family:'Archivo Black',sans-serif; font-size:56px; letter-spacing:-.02em;">2.54<span style="font-size:24px;">kg</span></div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#CDF23A;">+1.6% · within band</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px;">
+              <span style="border:1px solid #4A4A44; padding:14px; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:18px;">7</span>
+              <span style="border:1px solid #4A4A44; padding:14px; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:18px;">8</span>
+              <span style="border:1px solid #4A4A44; padding:14px; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:18px;">9</span>
+            </div>
+          </div>
+          <div style="padding:18px;">
+            <div style="height:100px; border:1px dashed #4A4A44; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8C8A82; text-align:center; margin-bottom:12px;">REQUIRED PHOTO<br>the scale readout with the label visible</div>
+            <div style="display:flex; gap:8px;">
+              <a href="#2a" style="flex:1; text-align:center; border:1px solid #4A4A44; font-size:14px; font-weight:600; padding:13px;">Take photo</a>
+              <a href="#2a" style="flex:1; text-align:center; border:1px solid #4A4A44; font-size:14px; font-weight:600; padding:13px;">Signature</a>
+            </div>
+          </div>
+          <div style="margin-top:auto; padding:18px; border-top:1px solid #333;">
+            <p style="margin:0 0 12px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.6; color:#8C8A82;">Recording this offline. If someone else already handed over this slot, the server keeps the first record and flags this one for review.</p>
+            <a href="#2a" style="display:block; text-align:center; background:#CDF23A; color:#101010; font-size:17px; font-weight:700; padding:16px;">Confirm handover, slot 1</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">11 · CREDIT &amp; REFUNDS · /account/credit</div>
+        <div data-screen-label="11 Credit" style="width:390px; min-height:720px; background:#F2F0EA; color:#101010; border:1px solid #101010; display:flex; flex-direction:column;">
+          <div style="padding:16px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">Credit</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px;">TOLU OKAFOR</span>
+          </div>
+          <div style="padding:24px 20px; border-bottom:1px solid #101010;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">AVAILABLE ON YOUR NEXT SLOT</div>
+            <div style="font-family:'Archivo Black',sans-serif; font-size:52px; letter-spacing:-.03em; line-height:1.1;">₦1,940</div>
+            <p style="margin:8px 0 16px; font-size:14.5px; line-height:1.55; color:#3A382F;">Credit comes off the price of any pool automatically. You can also ask for it as cash to your bank, and we send it within 24 hours.</p>
+            <div style="display:flex; gap:8px;">
+              <a href="#2a" style="flex:1; text-align:center; background:#CDF23A; border:1px solid #101010; font-size:14.5px; font-weight:700; padding:13px;">Spend on a pool</a>
+              <a href="#2a" style="flex:1; text-align:center; border:1px solid #101010; font-size:14.5px; font-weight:600; padding:13px;">Send to my bank</a>
+            </div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:14px;">EVERY MOVEMENT</div>
+            <div style="font-size:14px;">
+              <div style="display:flex; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #DCD9CF;"><div><div style="font-weight:600;">Yield shortfall, ram #A-2214</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">24 AUG · 2.28kg vs 2.50kg</div></div><span style="font-family:'IBM Plex Mono',monospace; color:#2F6B45; white-space:nowrap;">+₦740</span></div>
+              <div style="display:flex; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #DCD9CF;"><div><div style="font-weight:600;">Overpayment returned as credit</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">11 AUG · sent ₦17,000 for ₦16,800</div></div><span style="font-family:'IBM Plex Mono',monospace; color:#2F6B45; white-space:nowrap;">+₦200</span></div>
+              <div style="display:flex; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #DCD9CF;"><div><div style="font-weight:600;">Invite credit, Hauwa joined</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">02 AUG</div></div><span style="font-family:'IBM Plex Mono',monospace; color:#2F6B45; white-space:nowrap;">+₦1,000</span></div>
+              <div style="display:flex; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #DCD9CF;"><div><div style="font-weight:600;">Spent on beans #A-2185</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">21 JUL</div></div><span style="font-family:'IBM Plex Mono',monospace; white-space:nowrap;">−₦500</span></div>
+              <div style="display:flex; justify-content:space-between; gap:12px; padding:11px 0;"><div><div style="font-weight:600;">Goodwill, late handover at Karu</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A;">09 JUL · you waited 40 minutes</div></div><span style="font-family:'IBM Plex Mono',monospace; color:#2F6B45; white-space:nowrap;">+₦500</span></div>
+            </div>
+          </div>
+          <div style="margin-top:auto; padding:20px; border-top:1px solid #101010;">
+            <p style="margin:0; font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.6; color:#54524A;">Credit is for buying food here. It is not a savings account and it earns nothing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 AUTH -->
+    <div style="flex:0 0 auto; display:flex; gap:24px; align-items:flex-start;">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">12 · SIGN IN · /join then /otp</div>
+        <div data-screen-label="12 Sign in" style="width:390px; min-height:600px; background:#F2F0EA; color:#101010; border:1px solid #101010; display:flex; flex-direction:column;">
+          <div style="padding:22px 20px 0;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:34px;"><div style="width:18px; height:18px; background:#101010;"></div><span style="font-family:'Archivo Black',sans-serif; font-size:16px;">BulkieShare</span></div>
+            <h1 style="font-family:'Archivo Black',sans-serif; font-size:34px; letter-spacing:-.03em; line-height:1.02; margin:0 0 10px;">What is your phone number?</h1>
+            <p style="margin:0 0 22px; font-size:15.5px; line-height:1.55; color:#54524A;">We send a six digit code on WhatsApp. No password to remember or lose.</p>
+            <div style="display:flex; border:1px solid #101010; background:#fff; margin-bottom:12px;">
+              <span style="padding:15px 12px; border-right:1px solid #101010; font-family:'IBM Plex Mono',monospace; font-size:17px;">+234</span>
+              <span style="padding:15px 12px; font-family:'IBM Plex Mono',monospace; font-size:17px; color:#A8A69C;">803 441 9022</span>
+            </div>
+            <a href="#2a" style="display:block; text-align:center; background:#101010; color:#F2F0EA; font-size:17px; font-weight:700; padding:16px; margin-bottom:22px;">Send me a code</a>
+            <div style="border-top:1px solid #DCD9CF; padding-top:18px;">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:10px;">CODE SENT · 05:42 TO RESEND</div>
+              <div style="display:flex; gap:7px; margin-bottom:12px;">
+                <span style="flex:1; border:1px solid #101010; background:#fff; padding:14px 0; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600;">4</span>
+                <span style="flex:1; border:1px solid #101010; background:#fff; padding:14px 0; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600;">1</span>
+                <span style="flex:1; border:1px solid #101010; background:#fff; padding:14px 0; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600;">8</span>
+                <span style="flex:1; border:1px solid #101010; background:#fff; padding:14px 0; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600;">0</span>
+                <span style="flex:1; border:2px solid #101010; background:#fff; padding:13px 0; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:22px; color:#A8A69C;">|</span>
+                <span style="flex:1; border:1px solid #101010; background:#fff; padding:14px 0;"></span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <a href="#2a" style="flex:1; text-align:center; border:1px solid #101010; font-size:14px; font-weight:600; padding:12px;">Send by SMS instead</a>
+                <a href="#2a" style="flex:1; text-align:center; border:1px solid #101010; font-size:14px; font-weight:600; padding:12px;">Wrong number</a>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:auto; padding:20px; border-top:1px solid #101010;">
+            <p style="margin:0; font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.65; color:#54524A;">If WhatsApp does not deliver in 60 seconds we send an SMS automatically. Three wrong codes locks the number for 15 minutes.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">13 · MY POOLS · first time, empty</div>
+        <div data-screen-label="13 My pools empty" style="width:390px; min-height:600px; background:#F2F0EA; color:#101010; border:1px solid #101010; display:flex; flex-direction:column;">
+          <div style="padding:16px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">My pools</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; border:1px solid #101010; padding:5px 8px;">ABUJA</span>
+          </div>
+          <div style="padding:30px 20px; border-bottom:1px solid #101010;">
+            <h2 style="font-family:'Archivo Black',sans-serif; font-size:30px; letter-spacing:-.03em; line-height:1.03; margin:0 0 10px;">You have not joined a pool yet</h2>
+            <p style="margin:0 0 18px; font-size:15.5px; line-height:1.55; color:#3A382F;">Two pools close this week. The rice pool needs two more people to go ahead, so joining it does something visible today.</p>
+            <a href="#2a" style="display:block; text-align:center; background:#CDF23A; border:1px solid #101010; font-size:16px; font-weight:700; padding:15px;">Browse six open pools</a>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:12px;">CHEAPEST WAY IN</div>
+            <div style="border:1px solid #101010; background:#fff; padding:16px; margin-bottom:10px;">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; margin-bottom:4px;">#A-2244 · WUSE HUB · SAT 23 AUG</div>
+              <div style="font-family:'Archivo Black',sans-serif; font-size:21px; letter-spacing:-.02em;">Palm oil, 5 litres</div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:10px;"><span style="font-family:'Archivo Black',sans-serif; font-size:24px;">₦9,200</span><a href="#2a" style="border:1px solid #101010; font-size:14px; font-weight:600; padding:9px 14px;">Look at it</a></div>
+            </div>
+            <p style="margin:0; font-size:14.5px; line-height:1.6; color:#54524A;">Nothing here is a subscription. Join one pool, collect once, decide then.</p>
+          </div>
+          <div style="margin-top:auto; display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid #101010; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-align:center;">
+            <div style="padding:12px 0; background:#101010; color:#CDF23A;">MY POOLS</div>
+            <div style="padding:12px 0; border-right:1px solid #DCD9CF;">BROWSE</div>
+            <div style="padding:12px 0; border-right:1px solid #DCD9CF;">COLLECT</div>
+            <div style="padding:12px 0;">ACCOUNT</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">14 · BOOK A WINDOW · hub capacity aware</div>
+        <div data-screen-label="14 Book window" style="width:390px; min-height:600px; background:#F2F0EA; color:#101010; border:1px solid #101010; display:flex; flex-direction:column;">
+          <div style="padding:16px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">Book collection</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px;">#A-2190 · KUJE</span>
+          </div>
+          <div style="padding:24px 20px 18px;">
+            <h2 style="font-family:'Archivo Black',sans-serif; font-size:28px; letter-spacing:-.03em; line-height:1.05; margin:0 0 8px;">Saturday 16 August at Kuje hub</h2>
+            <p style="margin:0 0 18px; font-size:15px; line-height:1.55; color:#54524A;">Pick a twenty minute window. The hub handles 30 handovers an hour, so a full window means somebody else got there first.</p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="border:1px solid #101010; background:#fff; padding:13px 16px; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:16px; font-weight:600;">09:00 to 09:20</span><span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">4 places left</span></div>
+              <div style="border:1px solid #DCD9CF; padding:13px 16px; display:flex; justify-content:space-between; align-items:center; color:#A8A69C; background:#EDEAE1;"><span style="font-size:16px; font-weight:600; text-decoration:line-through;">09:20 to 09:40</span><span style="font-family:'IBM Plex Mono',monospace; font-size:12px;">full</span></div>
+              <div style="border:1px solid #DCD9CF; padding:13px 16px; display:flex; justify-content:space-between; align-items:center; color:#A8A69C; background:#EDEAE1;"><span style="font-size:16px; font-weight:600; text-decoration:line-through;">10:00 to 10:20</span><span style="font-family:'IBM Plex Mono',monospace; font-size:12px;">full</span></div>
+              <div style="border:2px solid #101010; background:#CDF23A; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:16px; font-weight:700;">10:20 to 10:40</span><span style="font-family:'IBM Plex Mono',monospace; font-size:12px;">your choice · 2 left</span></div>
+              <div style="border:1px solid #101010; background:#fff; padding:13px 16px; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:16px; font-weight:600;">11:00 to 11:20</span><span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">9 places left</span></div>
+              <div style="border:1px solid #101010; background:#fff; padding:13px 16px; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:16px; font-weight:600;">12:40 to 13:00</span><span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#54524A;">10 places left</span></div>
+            </div>
+          </div>
+          <div style="margin-top:auto; padding:20px; border-top:1px solid #101010;">
+            <p style="margin:0 0 12px; font-size:14.5px; line-height:1.55; color:#3A382F;">Your two slots are handed over together in one window. Aisha needs her own window only if she is coming separately.</p>
+            <a href="#2a" style="display:block; text-align:center; background:#101010; color:#F2F0EA; font-size:16px; font-weight:700; padding:15px;">Book 10:20 for both slots</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15 DISPUTE + 16 INVITE + 17 ACCOUNT -->
+    <div style="flex:0 0 auto; display:flex; gap:24px; align-items:flex-start;">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">15 · RAISE A PROBLEM · /disputes/new</div>
+        <div data-screen-label="15 Dispute" style="width:390px; min-height:640px; background:#F2F0EA; color:#101010; border:1px solid #101010; display:flex; flex-direction:column;">
+          <div style="padding:16px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">Report a problem</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px;">#A-2190</span>
+          </div>
+          <div style="padding:24px 20px;">
+            <h2 style="font-family:'Archivo Black',sans-serif; font-size:27px; letter-spacing:-.03em; line-height:1.05; margin:0 0 8px;">What went wrong with the Kuje cow?</h2>
+            <p style="margin:0 0 18px; font-size:15px; line-height:1.55; color:#54524A;">Pick the closest one. We answer within 48 hours and you can see the clock.</p>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px;">
+              <div style="border:1px solid #101010; background:#fff; padding:13px 15px; font-size:15.5px; font-weight:600;">My portion weighed less than promised</div>
+              <div style="border:2px solid #101010; background:#CDF23A; padding:12px 15px; font-size:15.5px; font-weight:700;">The quality was bad or it had spoiled</div>
+              <div style="border:1px solid #101010; background:#fff; padding:13px 15px; font-size:15.5px; font-weight:600;">I got the wrong cuts or the wrong item</div>
+              <div style="border:1px solid #101010; background:#fff; padding:13px 15px; font-size:15.5px; font-weight:600;">Nobody was at the hub in my window</div>
+              <div style="border:1px solid #101010; background:#fff; padding:13px 15px; font-size:15.5px; font-weight:600;">Money problem, wrong amount or missing refund</div>
+            </div>
+            <div style="border:1px dashed #101010; padding:22px; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; line-height:1.6; margin-bottom:12px;">ADD PHOTOS<br>a photo of the item makes this much faster to settle</div>
+            <div style="border:1px solid #101010; background:#fff; padding:14px; font-size:14.5px; color:#A8A69C; line-height:1.5;">Say what happened in your own words. Optional.</div>
+          </div>
+          <div style="margin-top:auto; padding:20px; border-top:1px solid #101010;">
+            <p style="margin:0 0 12px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.65; color:#54524A;">Outcomes are credit, a cash refund or a replacement in the next pool. We tell you which and why, in writing.</p>
+            <a href="#2a" style="display:block; text-align:center; background:#101010; color:#F2F0EA; font-size:16px; font-weight:700; padding:15px;">Send it to support</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">16 · INVITE TO FILL · /invite</div>
+        <div data-screen-label="16 Invite" style="width:390px; min-height:640px; background:#F2F0EA; color:#101010; border:1px solid #101010; display:flex; flex-direction:column;">
+          <div style="padding:16px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">Invite</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px;">#A-2214 · 4 SLOTS OPEN</span>
+          </div>
+          <div style="padding:24px 20px; border-bottom:1px solid #101010;">
+            <h2 style="font-family:'Archivo Black',sans-serif; font-size:28px; letter-spacing:-.03em; line-height:1.03; margin:0 0 10px;">Four people short. You know four people.</h2>
+            <p style="margin:0 0 16px; font-size:15px; line-height:1.55; color:#3A382F;">The ram pool closes Friday at 18:00. If it does not fill, everyone including you gets refunded and nobody eats. Sharing it is the fastest way to make it happen.</p>
+            <div style="background:#fff; border:1px solid #101010; padding:14px; font-size:14.5px; line-height:1.6; margin-bottom:14px;">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#54524A; margin-bottom:6px;">WHAT THEY WILL SEE</div>
+              I am buying a share of a ram with 35 other people in Abuja, ₦8,400 for about 2.5kg. Collect at Lugbe hub on Sunday 24 August. Four slots left. bulkieshare.ng/p/A-2214
+            </div>
+            <div style="display:flex; gap:8px;">
+              <a href="#2a" style="flex:1; text-align:center; background:#CDF23A; border:1px solid #101010; font-size:15px; font-weight:700; padding:13px;">Send on WhatsApp</a>
+              <a href="#2a" style="flex:1; text-align:center; border:1px solid #101010; font-size:15px; font-weight:600; padding:13px;">Copy the link</a>
+            </div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:12px;">WHAT YOU GET</div>
+            <p style="margin:0 0 14px; font-size:15px; line-height:1.6; color:#3A382F;">₦1,000 credit for each person who joins and pays for their first slot, capped at five people a month. It lands when their pool completes, not when they sign up, because otherwise this becomes a numbers game.</p>
+            <div style="border:1px solid #101010; background:#fff;">
+              <div style="display:flex; justify-content:space-between; padding:11px 14px; border-bottom:1px solid #EDEAE1; font-size:14.5px;"><span>Hauwa Ibrahim</span><span style="font-family:'IBM Plex Mono',monospace; color:#2F6B45;">₦1,000 paid</span></div>
+              <div style="display:flex; justify-content:space-between; padding:11px 14px; border-bottom:1px solid #EDEAE1; font-size:14.5px;"><span>Musa Danjuma</span><span style="font-family:'IBM Plex Mono',monospace; color:#54524A;">joined, not collected</span></div>
+              <div style="display:flex; justify-content:space-between; padding:11px 14px; font-size:14.5px;"><span>Grace Adeyemi</span><span style="font-family:'IBM Plex Mono',monospace; color:#A8A69C;">link opened</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#fff; margin-bottom:10px;">17 · ACCOUNT · /account</div>
+        <div data-screen-label="17 Account" style="width:390px; min-height:640px; background:#F2F0EA; color:#101010; border:1px solid #101010; display:flex; flex-direction:column;">
+          <div style="padding:16px 20px; border-bottom:1px solid #101010; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Archivo Black',sans-serif; font-size:15px;">Account</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px;">TOLU OKAFOR</span>
+          </div>
+          <div style="padding:20px; border-bottom:1px solid #101010;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:12px;">YOU</div>
+            <div style="display:flex; justify-content:space-between; font-size:15px; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">Phone</span><span style="font-family:'IBM Plex Mono',monospace;">0803 441 9022</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:15px; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">Area</span><span style="font-weight:600;">Abuja</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:15px; padding:9px 0; border-bottom:1px solid #DCD9CF;"><span style="color:#54524A;">Usual hub</span><span style="font-weight:600;">Kuje</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:15px; padding:9px 0;"><span style="color:#54524A;">Language</span><span style="font-weight:600;">English</span></div>
+          </div>
+          <div style="padding:20px; border-bottom:1px solid #101010;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:10px;">REFUNDS GO HERE</div>
+            <div style="border:1px solid #101010; background:#fff; padding:14px;">
+              <div style="font-size:16px; font-weight:700;">Sterling Bank ····4402</div>
+              <div style="font-size:14px; color:#54524A; margin-top:2px;">TOLUWANI OKAFOR · matched to your BVN name</div>
+              <a href="#2a" style="display:inline-block; margin-top:12px; border:1px solid #101010; font-size:13.5px; font-weight:600; padding:9px 13px;">Change account</a>
+            </div>
+            <p style="margin:12px 0 0; font-family:'IBM Plex Mono',monospace; font-size:11px; line-height:1.65; color:#54524A;">Refunds only ever go to an account in your own name. Changing it needs a new code and pauses refunds for 24 hours.</p>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#54524A; margin-bottom:12px;">MESSAGES</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid #DCD9CF;"><div><div style="font-size:15px; font-weight:600;">Payments and refunds</div><div style="font-size:13px; color:#54524A;">cannot be switched off</div></div><span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:#101010; color:#CDF23A; padding:4px 8px;">ALWAYS ON</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid #DCD9CF;"><div style="font-size:15px; font-weight:600;">Collection reminders</div><span style="width:40px; height:22px; background:#101010; position:relative;"><span style="position:absolute; right:2px; top:2px; width:18px; height:18px; background:#CDF23A;"></span></span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid #DCD9CF;"><div style="font-size:15px; font-weight:600;">Pool closing soon</div><span style="width:40px; height:22px; background:#101010; position:relative;"><span style="position:absolute; right:2px; top:2px; width:18px; height:18px; background:#CDF23A;"></span></span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 0;"><div style="font-size:15px; font-weight:600;">New pools in Abuja</div><span style="width:40px; height:22px; border:1px solid #101010; background:#fff; position:relative;"><span style="position:absolute; left:2px; top:2px; width:16px; height:16px; background:#A8A69C;"></span></span></div>
+            <div style="display:flex; gap:8px; margin-top:18px;">
+              <a href="#2a" style="flex:1; text-align:center; border:1px solid #101010; font-size:14px; font-weight:600; padding:12px;">Download my data</a>
+              <a href="#2a" style="flex:1; text-align:center; border:1px solid #B4441F; color:#B4441F; font-size:14px; font-weight:600; padding:12px;">Delete my account</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SitePage } from "@/components/nav";
 import { Btn, PhotoPlaceholder, PoolProgress } from "@/components/ui";
-import { formatNaira, getPool } from "@/lib/mock-data";
+import { formatNaira, getPool, slotsLeftLabel } from "@/lib/mock-data";
 
 export async function generateMetadata({
   params,
@@ -23,7 +23,6 @@ export default async function PoolDetail({
   const pool = getPool(id);
   const slotsLeft = pool.totalSlots - pool.paidSlots - pool.reservedUnpaidSlots;
   const thresholdMet = pool.paidSlots + pool.reservedUnpaidSlots >= pool.threshold;
-  const nearlyFull = slotsLeft > 0 && slotsLeft <= 4 && pool.state === "open";
 
   return (
     <SitePage area={area}>
@@ -47,7 +46,7 @@ export default async function PoolDetail({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-ink border border-ink mb-6">
               <div className="bg-card p-4">
                 <div className="font-mono text-[11.5px] text-text-dim">WHAT ONE SLOT IS</div>
-                <div className="text-[17px] font-semibold">{pool.unitDescription.split(".")[0]}</div>
+                <div className="text-[17px] font-semibold">{pool.unitDescription.split(/\.\s/)[0]}</div>
               </div>
               {pool.toleranceBand && (
                 <div className="bg-card p-4">
@@ -99,9 +98,7 @@ export default async function PoolDetail({
               {pool.state === "open" && (
                 <>
                   <div className="flex justify-between items-baseline mb-2">
-                    <span className="font-display text-[30px]">
-                      {nearlyFull ? `${slotsLeft} slots left` : `${slotsLeft} slots left`}
-                    </span>
+                    <span className="font-display text-[30px]">{slotsLeftLabel(slotsLeft)}</span>
                     <span className="font-mono text-[13px]">
                       {pool.paidSlots} / {pool.totalSlots} paid
                     </span>

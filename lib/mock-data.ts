@@ -26,6 +26,10 @@ export function formatNaira(amount: number): string {
   return "₦" + Math.round(amount).toLocaleString("en-NG");
 }
 
+export function slotsLeftLabel(n: number): string {
+  return `${n} slot${n === 1 ? "" : "s"} left`;
+}
+
 export const HUBS: Hub[] = [
   {
     id: "wuse",

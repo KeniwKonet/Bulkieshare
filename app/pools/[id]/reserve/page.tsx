@@ -1,7 +1,7 @@
 import { AppHeader } from "@/components/nav";
 import { Btn, PoolProgress } from "@/components/ui";
 import { Stepper } from "@/components/interactive";
-import { formatNaira, getPool } from "@/lib/mock-data";
+import { formatNaira, getPool, slotsLeftLabel } from "@/lib/mock-data";
 
 export const metadata = { title: "Reserve a slot" };
 
@@ -26,7 +26,7 @@ export default async function ReservePage({ params }: { params: Promise<{ id: st
         <div className="border border-ink bg-card p-5 sm:p-6">
           <div className="flex justify-between items-baseline mb-2">
             <span className="font-display text-[26px]">
-              {pool.totalSlots - pool.paidSlots - pool.reservedUnpaidSlots} slots left
+              {slotsLeftLabel(pool.totalSlots - pool.paidSlots - pool.reservedUnpaidSlots)}
             </span>
             <span className="font-mono text-[13px]">
               {pool.paidSlots} / {pool.totalSlots} paid

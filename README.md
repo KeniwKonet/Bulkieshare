@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BulkieShare
 
-## Getting Started
+Group-buying platform for bulk food in Nigeria, starting in Abuja. Members pay for a slot in a
+pool (e.g. one slot of a 40-slot cow), the pool proceeds only once it passes a threshold, and
+members collect their portion at a neighbourhood hub on a share date.
 
-First, run the development server:
+This is the full frontend — public site, member app, coordinator area, supplier area, and ops
+back office — built with **Next.js (App Router) + TypeScript + Tailwind CSS**, implementing the
+design handoff in `design/` (`BulkieShare *.dc.html`, reference only, not built from directly at
+runtime).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+- **Next.js 16** (App Router, Turbopack) + **React 19** + **TypeScript**
+- **Tailwind CSS v4**, configured with the BulkieShare design tokens (colour, type, spacing,
+  zero border radius) in `app/globals.css`
+- Fonts: Archivo, Archivo Black, IBM Plex Mono via `next/font/google`
+- No backend — all data is static mock data in `lib/mock-data.ts`, typed against the domain
+  entities described in the design handoff (`lib/types.ts`)
+
+## Structure
+
+```
+app/
+  [area]/                 public site: home, pool listing, pool detail, report, hubs
+  how-it-works, trust, help, terms, privacy, pool-policy
+  join, otp                member sign-in
+  pools/[id]/reserve       reserve a slot
+  pay/[reservation]        payment screen with countdown
+  commitments/[id]/...     people, settlement
+  my-pools, collections/... member dashboard, booking, collection pass
+  refunds/[id], disputes/... refund + dispute tracking
+  account/...              profile, credit, notifications, data export
+  groups/...                coordinator acquisition + dashboard + tools
+  supply/...                supplier acquisition + portal + WhatsApp path
+  admin/...                 ops back office (pools, refunds, disputes, reconciliation, ...)
+  hub/...                    offline-style hub agent handover tool
+components/
+  ui.tsx                   shared primitives: buttons, progress bar, grid tables, pool card
+  nav.tsx                   per-area shells/headers (site, app, groups, supply, ops)
+  interactive.tsx           client-side bits: stepper, countdown, toggle, OTP input
+lib/
+  types.ts, mock-data.ts    domain types + mock data
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Getting started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000). The root route redirects to `/abuja`.
 
-## Learn More
+## Build
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm run lint
+```
