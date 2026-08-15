@@ -24,6 +24,14 @@ import { recordAudit } from "@/lib/domain/ops";
 
 export const runtime = "nodejs";
 
+/** The deployment cannot verify tokens at all — nothing the caller can fix. */
+function unavailable() {
+  return Response.json(
+    { error: "Sync is unavailable: Supabase auth is not configured on this deployment." },
+    { status: 503 },
+  );
+}
+
 const bodySchema = z.object({
   handovers: z
     .array(
@@ -40,10 +48,28 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const { data: ctx, error } = await createSupabaseContext(request, { auth: "user" });
+  // `createSupabaseContext` throws rather than returning when the project
+  // credentials are missing entirely, so a deployment without them would answer
+  // a perfectly ordinary unauthenticated request with a 500.
+  let ctx: Awaited<ReturnType<typeof createSupabaseContext>>["data"] = null;
+  let authError: { status?: number } | null = null;
 
-  if (error || !ctx?.userClaims) {
-    return Response.json({ error: "Sign in to sync." }, { status: error?.status ?? 401 });
+  try {
+    const result = await createSupabaseContext(request, { auth: "user" });
+    ctx = result.data;
+    authError = result.error;
+  } catch {
+    return unavailable();
+  }
+
+  // A missing project URL or key comes back as a 5xx here. That is our problem,
+  // not the caller's, and it must not be reported as a rejected credential —
+  // an agent whose phone is full of unsynced handovers needs to know the
+  // difference between "sign in again" and "the server cannot do this yet".
+  if (authError?.status && authError.status >= 500) return unavailable();
+
+  if (authError || !ctx?.userClaims) {
+    return Response.json({ error: "Sign in to sync." }, { status: 401 });
   }
 
   const authUserId = ctx.jwtClaims?.sub;
