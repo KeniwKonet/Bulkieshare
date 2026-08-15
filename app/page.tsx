@@ -1,9 +1,19 @@
 import { redirect } from "next/navigation";
-import { DEFAULT_AREA } from "@/lib/mock-data";
 
-// Area resolver: manual choice beats profile beats IP beats default,
-// and a manual choice is never silently overridden. In this static build
-// we always land on the default service area.
-export default function RootPage() {
-  redirect(`/${DEFAULT_AREA}`);
+import { getCurrentMember } from "@/lib/auth/dal";
+import { listAreas } from "@/lib/domain/pools";
+
+/**
+ * Area resolver: a signed-in member's own area wins, otherwise the first live
+ * area. A manual choice, once made, lives in the URL and is never overridden.
+ */
+export default async function RootPage() {
+  const [member, areas] = await Promise.all([getCurrentMember(), listAreas()]);
+
+  const preferred = member?.areaSlug
+    ? areas.find((a) => a.slug === member.areaSlug && a.isLive)
+    : undefined;
+  const fallback = areas.find((a) => a.isLive) ?? areas[0];
+
+  redirect(`/${(preferred ?? fallback)?.slug ?? "abuja"}`);
 }

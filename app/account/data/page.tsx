@@ -1,9 +1,27 @@
 import { PhoneShell } from "@/components/nav";
-import { Btn } from "@/components/ui";
+import { requireMember } from "@/lib/auth/dal";
+import { listMemberCommitments } from "@/lib/domain/commitments";
+import { listCreditMovements, listMemberDisputes, listMemberRefunds } from "@/lib/domain/support";
 
 export const metadata = { title: "Your data" };
 
-export default function AccountDataPage() {
+export default async function AccountDataPage() {
+  const member = await requireMember("/account/data");
+
+  const [commitments, credit, disputes, refunds] = await Promise.all([
+    listMemberCommitments(member.id),
+    listCreditMovements(member.id),
+    listMemberDisputes(member.id),
+    listMemberRefunds(member.id),
+  ]);
+
+  const rows: [string, number][] = [
+    ["Pools you have joined", commitments.length],
+    ["Store credit movements", credit.length],
+    ["Disputes you raised", disputes.length],
+    ["Refunds owed or paid", refunds.length],
+  ];
+
   return (
     <div className="bg-[#8E8C86] min-h-screen py-6">
       <PhoneShell title="Your data" eyebrow="NDPA REQUEST">
@@ -13,30 +31,46 @@ export default function AccountDataPage() {
           </h2>
           <p className="text-[15px] leading-relaxed text-text-dim mb-5">
             Under the Nigeria Data Protection Act you can ask for a copy of everything we hold on
-            you, or ask us to delete it. Both are tracked as a ticket you can follow.
+            you, or ask us to delete it.
           </p>
+
           <div className="border border-ink bg-card p-4 mb-3">
-            <div className="text-[16px] font-bold mb-1.5">Request a copy of my data</div>
-            <p className="text-[14px] text-text-dim leading-relaxed mb-3">
-              A file with your profile, payments, pools and messages, sent within 14 days.
-            </p>
-            <Btn size="sm">Request a copy</Btn>
+            <div className="text-[16px] font-bold mb-2.5">What we hold on you right now</div>
+            <div className="text-[14px]">
+              {rows.map(([label, n], i) => (
+                <div
+                  key={label}
+                  className={`flex justify-between py-2 ${i < rows.length - 1 ? "border-b border-rule-card" : ""}`}
+                >
+                  <span className="text-text-dim">{label}</span>
+                  <span className="font-mono font-semibold">{n}</span>
+                </div>
+              ))}
+            </div>
+            {/* A plain anchor, not next/link: this is a file download from a
+                Route Handler, and a client-side navigation would swallow it. */}
+            <a
+              href="/api/account/export"
+              download
+              className="inline-block bg-lime border border-ink text-[14px] font-bold px-4 py-3 mt-3.5"
+            >
+              Download it as JSON
+            </a>
           </div>
+
           <div className="border border-rust p-4">
             <div className="text-[16px] font-bold text-rust mb-1.5">Delete my account</div>
-            <p className="text-[14px] text-text-dim leading-relaxed mb-3">
+            <p className="text-[14px] text-text-dim leading-relaxed">
               We keep payment and refund records as required by law, but remove everything else.
-              This cannot be undone.
+              Deletion is handled by a person, so send the request from your registered number on
+              WhatsApp and we confirm on a second channel before anything is removed.
             </p>
-            <button className="border border-rust text-rust text-[14px] font-semibold px-4 py-2.5">
-              Start deletion request
-            </button>
           </div>
         </div>
+
         <div className="mt-auto px-5 py-5 border-t border-ink">
           <p className="font-mono text-[11px] leading-relaxed text-text-dim">
-            Open tickets show here with a tracked status. Nothing is deleted immediately without
-            confirmation on a second channel.
+            The export is generated live from your records at the moment you press the button.
           </p>
         </div>
       </PhoneShell>

@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
 import { SitePage } from "@/components/nav";
 import { AreaNotLive } from "@/components/area-not-live";
 import { PoolCard } from "@/components/ui";
-import { AREA_LABELS, LIVE_AREAS, poolsByArea } from "@/lib/mock-data";
+import { getArea, listHubs, listOpenPools, settleClosedPools } from "@/lib/domain/pools";
+import { nairaToKobo } from "@/lib/money";
 
 const FILTERS = [
   { key: "all", label: "ALL" },
@@ -18,27 +21,36 @@ export default async function PoolsListing({
   searchParams,
 }: {
   params: Promise<{ area: string }>;
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; hub?: string }>;
 }) {
   const { area } = await params;
-  const { filter = "all" } = await searchParams;
+  const { filter = "all", hub } = await searchParams;
 
-  if (!LIVE_AREAS.has(area)) {
+  const areaRow = await getArea(area);
+  if (!areaRow) notFound();
+
+  if (!areaRow.isLive) {
     return (
       <SitePage area={area}>
-        <AreaNotLive area={area} />
+        <AreaNotLive area={area} label={areaRow.label} waitlistCount={areaRow.waitlistCount} />
       </SitePage>
     );
   }
 
-  const label = AREA_LABELS[area] ?? area;
-  const all = poolsByArea(area).filter((p) => p.state === "open");
+  // Anything past its closing time gets moved out of "open" before we list.
+  await settleClosedPools();
+
+  const [all, hubs] = await Promise.all([listOpenPools(area), listHubs(area)]);
+
   const filtered = all.filter((p) => {
+    if (hub && p.hubId !== hub) return false;
     if (filter === "meat") return p.category === "meat";
     if (filter === "grains") return p.category === "grains";
-    if (filter === "under10k") return p.pricePerSlot < 10000;
+    if (filter === "under10k") return p.pricePerSlotKobo < nairaToKobo(10_000);
     return true;
   });
+
+  const closingThisWeek = all.filter((p) => p.closesInDays < 7).length;
 
   return (
     <SitePage area={area}>
@@ -46,11 +58,13 @@ export default async function PoolsListing({
         <div className="flex justify-between items-end mb-1 flex-wrap gap-4">
           <div>
             <h1 className="font-display text-[32px] sm:text-[40px] tracking-tight">
-              {all.length} pools open in {label}
+              {all.length} pool{all.length === 1 ? "" : "s"} open in {areaRow.label}
             </h1>
             <p className="text-[15.5px] text-text-dim mt-1.5">
-              Two close this week. Prices are set per hub, so what you see is what you pay at
-              that hub.
+              {closingThisWeek > 0
+                ? `${closingThisWeek} close${closingThisWeek === 1 ? "s" : ""} this week. `
+                : ""}
+              Prices are set per hub, so what you see is what you pay at that hub.
             </p>
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -68,6 +82,30 @@ export default async function PoolsListing({
           </div>
         </div>
 
+        {hubs.length > 1 && (
+          <div className="flex gap-2 flex-wrap mt-4">
+            <Link
+              href={`/${area}/pools${filter !== "all" ? `?filter=${filter}` : ""}`}
+              className={`font-mono text-[11.5px] px-2.5 py-1.5 border ${
+                !hub ? "bg-ink text-paper border-ink" : "border-rule"
+              }`}
+            >
+              ALL HUBS
+            </Link>
+            {hubs.map((h) => (
+              <Link
+                key={h.id}
+                href={`/${area}/pools?hub=${h.id}${filter !== "all" ? `&filter=${filter}` : ""}`}
+                className={`font-mono text-[11.5px] px-2.5 py-1.5 border ${
+                  hub === h.id ? "bg-ink text-paper border-ink" : "border-rule"
+                }`}
+              >
+                {h.name.toUpperCase()}
+              </Link>
+            ))}
+          </div>
+        )}
+
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {filtered.map((p) => (
@@ -77,29 +115,20 @@ export default async function PoolsListing({
         ) : (
           <div className="border border-ink bg-card px-6 py-14 text-center mt-8">
             <div className="font-display text-[26px] tracking-tight mb-2">
-              Nothing matches that filter right now
+              {all.length === 0
+                ? "No pools are open right now"
+                : "Nothing matches that filter right now"}
             </div>
             <p className="text-[15px] text-text-dim max-w-[52ch] mx-auto mb-4">
-              Try a different category, or see everything open in {label} today.
+              {all.length === 0
+                ? `We open new pools in ${areaRow.label} every week. Sign in and we will tell you first.`
+                : `Try a different category, or see everything open in ${areaRow.label} today.`}
             </p>
             <Link href={`/${area}/pools`} className="font-semibold border-b-2 border-ink">
-              Clear filters
+              {all.length === 0 ? "Refresh" : "Clear filters"}
             </Link>
           </div>
         )}
-
-        <div className="mt-10 border border-ink bg-ink text-paper px-6 py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="max-w-[60ch]">
-            <div className="font-display text-[22px] tracking-tight mb-1">Nothing near Enugu yet</div>
-            <p className="text-[14.5px] leading-relaxed text-dark-dim">
-              You are seeing {label} because that is where we run hubs. Tell us where you are and
-              we will open there when enough people ask. 340 people in Enugu have.
-            </p>
-          </div>
-          <Link href="/enugu/pools" className="bg-lime text-ink font-bold text-[15px] px-5 py-3.5 whitespace-nowrap">
-            Add me to the waitlist
-          </Link>
-        </div>
       </div>
     </SitePage>
   );

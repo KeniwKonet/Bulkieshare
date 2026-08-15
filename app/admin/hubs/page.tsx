@@ -1,16 +1,29 @@
 import { AdminResourceTable } from "@/components/admin-resource-table";
-import { HUBS } from "@/lib/mock-data";
+import { requireOps } from "@/lib/auth/dal";
+import { listHubs } from "@/lib/domain/pools";
 
 export const metadata = { title: "Hubs" };
 
-export default function AdminHubsPage() {
+export default async function AdminHubsPage() {
+  await requireOps();
+
+  const hubs = await listHubs();
+
   return (
     <AdminResourceTable
       title="Hubs"
-      subtitle="Standard resource table. Generated, not designed."
-      columns="1.2fr 1.5fr 1fr .8fr"
-      headers={["HUB", "WINDOWS", "CAPACITY/HR", "OPEN POOLS"]}
-      rows={HUBS.map((h) => [h.name, h.windows, h.capacityPerHour, h.openPools])}
+      subtitle="Where members collect. Capacity per hour is what generates the bookable windows."
+      active="hubs"
+      columns="1.1fr 1.4fr 1.3fr .8fr .7fr"
+      headers={["HUB", "ADDRESS", "WINDOWS", "CAP/HR", "OPEN"]}
+      rows={hubs.map((h) => [
+        h.name,
+        h.address,
+        h.windows,
+        String(h.capacityPerHour),
+        String(h.openPools),
+      ])}
+      footer={`${hubs.length} hubs`}
     />
   );
 }

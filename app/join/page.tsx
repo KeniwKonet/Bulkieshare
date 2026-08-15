@@ -1,14 +1,29 @@
 import Link from "next/link";
-import { Logo, Btn } from "@/components/ui";
+import { redirect } from "next/navigation";
+
+import { JoinForm } from "@/components/forms";
+import { Logo } from "@/components/ui";
+import { getCurrentMember } from "@/lib/auth/dal";
+import { isDemoMode } from "@/lib/env";
 
 export const metadata = { title: "Sign in" };
 
-export default function JoinPage() {
+export default async function JoinPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
+  const member = await getCurrentMember();
+  if (member) redirect(next || "/my-pools");
+
   return (
     <div className="min-h-screen bg-paper text-ink flex items-center justify-center px-5 py-10">
       <div className="max-w-[420px] w-full border border-ink bg-card p-6 sm:p-7">
         <div className="mb-8">
-          <Logo />
+          <Link href="/">
+            <Logo />
+          </Link>
         </div>
         <h1 className="font-display text-[30px] sm:text-[34px] tracking-tight leading-tight mb-2.5">
           What is your phone number?
@@ -16,22 +31,32 @@ export default function JoinPage() {
         <p className="text-[15.5px] leading-relaxed text-text-dim mb-5.5">
           We send a six digit code on WhatsApp. No password to remember or lose.
         </p>
-        <div className="flex border border-ink bg-card mb-3">
-          <span className="px-3 py-3.5 border-r border-ink font-mono text-[17px]">+234</span>
-          <input
-            type="tel"
-            placeholder="803 441 9022"
-            className="flex-1 px-3 py-3.5 font-mono text-[17px] bg-transparent outline-none placeholder:text-text-faint"
-          />
-        </div>
-        <Btn href="/otp" variant="dark" block size="xl" className="mb-1">
-          Send me a code
-        </Btn>
-        <p className="font-mono text-[11.5px] leading-relaxed text-text-dim mt-4 border-t border-rule pt-4">
-          If WhatsApp does not deliver in 60 seconds we send an SMS automatically. Three wrong
-          codes locks the number for 15 minutes.
-        </p>
-        <p className="text-[13.5px] text-text-dim mt-4">
+
+        <JoinForm next={next} />
+
+        {isDemoMode && (
+          <div className="border border-ink bg-card p-3.5 mt-5">
+            <div className="font-mono text-[11px] text-text-dim mb-2">
+              DEMO ACCOUNTS · ANY OF THESE, CODE SHOWN ON THE NEXT SCREEN
+            </div>
+            <div className="flex flex-col gap-1 font-mono text-[12.5px]">
+              {[
+                ["0803 441 9022", "member, 5 pools"],
+                ["0812 007 5510", "coordinator"],
+                ["0705 332 8841", "hub agent"],
+                ["0906 118 2043", "supplier"],
+                ["0803 000 0001", "ops back office"],
+              ].map(([number, who]) => (
+                <div key={number} className="flex justify-between gap-3">
+                  <span className="font-semibold">{number}</span>
+                  <span className="text-text-dim">{who}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <p className="text-[13.5px] text-text-dim mt-4 border-t border-rule pt-4">
           Coordinator or supplier?{" "}
           <Link href="/groups" className="font-semibold border-b border-ink">
             Groups

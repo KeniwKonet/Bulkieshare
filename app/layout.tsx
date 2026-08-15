@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Archivo_Black, IBM_Plex_Mono } from "next/font/google";
+
+import { DemoBanner } from "@/components/demo-banner";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -40,7 +42,10 @@ export default function RootLayout({
       lang="en"
       className={`${archivo.variable} ${archivoBlack.variable} ${plexMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <DemoBanner />
+        {children}
+      </body>
     </html>
   );
 }

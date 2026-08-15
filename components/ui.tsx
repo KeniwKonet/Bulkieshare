@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
-import type { Pool } from "@/lib/types";
-import { formatNaira } from "@/lib/mock-data";
+import type { PoolView } from "@/lib/domain/pools";
+import { formatKobo } from "@/lib/money";
 
 /* ---------------------------------------------------------------------- */
 /* Buttons                                                                 */
@@ -194,14 +194,14 @@ export function PoolProgress({
   height = 14,
   showCaption = true,
 }: {
-  pool: Pool;
+  pool: PoolView;
   height?: number;
   showCaption?: boolean;
 }) {
   const paidPct = (pool.paidSlots / pool.totalSlots) * 100;
-  const reservedPct = (pool.reservedUnpaidSlots / pool.totalSlots) * 100;
+  const reservedPct = (pool.holdingSlots / pool.totalSlots) * 100;
   const thresholdPct = (pool.threshold / pool.totalSlots) * 100;
-  const passed = pool.paidSlots + pool.reservedUnpaidSlots >= pool.threshold;
+  const passed = pool.thresholdPassed;
 
   return (
     <div>
@@ -214,8 +214,8 @@ export function PoolProgress({
       {showCaption && (
         <div className="flex justify-between font-mono text-[11.5px] text-text-dim mt-1.5">
           <span>
-            {pool.reservedUnpaidSlots > 0
-              ? `${pool.reservedUnpaidSlots} reserved, payment pending`
+            {pool.holdingSlots > 0
+              ? `${pool.holdingSlots} reserved, payment pending`
               : " "}
           </span>
           <span className={passed ? "text-rust" : ""}>
@@ -308,8 +308,8 @@ export function StatGrid({
 /* Pool card — used across browse / listing / home                         */
 /* ---------------------------------------------------------------------- */
 
-export function PoolCard({ pool, area }: { pool: Pool; area: string }) {
-  const slotsLeft = pool.totalSlots - pool.paidSlots - pool.reservedUnpaidSlots;
+export function PoolCard({ pool, area }: { pool: PoolView; area: string }) {
+  const { slotsLeft } = pool;
   return (
     <div className="border border-ink bg-card flex flex-col">
       <PhotoPlaceholder caption={pool.photoCaption} height={120} />
@@ -318,7 +318,9 @@ export function PoolCard({ pool, area }: { pool: Pool; area: string }) {
           <span>
             #{pool.code} · {pool.hubName.toUpperCase()}
           </span>
-          <span className="border border-ink px-1.5 py-0.5">{pool.closesAt.toUpperCase()}</span>
+          <span className="border border-ink px-1.5 py-0.5">
+            {pool.closesAtLabel.toUpperCase()}
+          </span>
         </div>
         <div className="font-display text-[23px] tracking-tight leading-tight">{pool.title}</div>
         <div className="text-[13.5px] text-text-dim my-1.5">{pool.unitDescription}</div>
@@ -334,7 +336,7 @@ export function PoolCard({ pool, area }: { pool: Pool; area: string }) {
         <div className="mt-auto flex justify-between items-end pt-3.5">
           <div>
             <div className="font-mono text-[11.5px] text-text-dim">PER SLOT</div>
-            <div className="font-display text-[26px]">{formatNaira(pool.pricePerSlot)}</div>
+            <div className="font-display text-[26px]">{formatKobo(pool.pricePerSlotKobo)}</div>
           </div>
           <Btn href={`/${area}/pools/${pool.id}`} variant="primary" size="sm">
             Take a slot

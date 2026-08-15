@@ -1,87 +1,98 @@
-"use client";
+import Link from "next/link";
 
-import { useState } from "react";
+import { CodeLookupForm, HandoverForm } from "@/components/hub-forms";
 import { PhoneShell } from "@/components/nav";
-import { Btn } from "@/components/ui";
+import { requireRole } from "@/lib/auth/dal";
+import { getCommitment } from "@/lib/domain/commitments";
+import { getPool } from "@/lib/domain/pools";
 
-const NOMINAL = 2.5;
-const BAND = 0.08;
+export const metadata = { title: "Record a handover" };
 
-export default function HandoverPage() {
-  const [digits, setDigits] = useState("254");
-  const weight = Number(digits) / 100;
-  const variancePct = ((weight - NOMINAL) / NOMINAL) * 100;
-  const withinBand = Math.abs(variancePct) <= BAND * 100;
+/** Pulls "±8%" out of a tolerance band string into a fraction. */
+function parseBand(band: string | null): number | null {
+  if (!band) return null;
+  const match = band.match(/([\d.]+)\s*%/);
+  return match ? Number(match[1]) / 100 : null;
+}
 
-  const press = (d: string) => {
-    if (d === "back") return setDigits((s) => s.slice(0, -1));
-    if (digits.length >= 4) return;
-    setDigits((s) => s + d);
-  };
+/** Pulls "≈2.5kg" out of a unit description into kilograms. */
+function parseNominalKg(unitDescription: string): number | null {
+  const match = unitDescription.match(/([\d.]+)\s*kg/i);
+  return match ? Number(match[1]) : null;
+}
+
+export default async function HandoverPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ commitment?: string }>;
+}) {
+  const { commitment: commitmentId } = await searchParams;
+  const agent = await requireRole("hub_agent");
+  const hubId = agent.homeHubId ?? "";
+
+  const commitment = commitmentId ? await getCommitment(commitmentId) : null;
+  const pool = commitment ? await getPool(commitment.poolId) : null;
+
+  // No one picked yet, or the code lookup step: show the keypad.
+  if (!commitment) {
+    return (
+      <div className="bg-[#8E8C86] min-h-screen py-6">
+        <PhoneShell dark>
+          <div className="px-4.5 py-3.5 bg-ink border-b border-dark-rule-2 flex justify-between items-center font-mono text-[12px] font-semibold">
+            <span>ENTER A CODE</span>
+            <Link href="/hub" className="text-dark-dim-2">
+              back to list
+            </Link>
+          </div>
+          <div className="px-4.5 py-4.5">
+            <p className="text-[15px] leading-relaxed text-dark-dim mb-4">
+              Ask for the four digit code on their collection pass. It works offline on their
+              phone, so they do not need signal to show it.
+            </p>
+            <CodeLookupForm hubId={hubId} />
+          </div>
+        </PhoneShell>
+      </div>
+    );
+  }
+
+  const alreadyDone = commitment.state === "collected";
 
   return (
     <div className="bg-[#8E8C86] min-h-screen py-6">
       <PhoneShell dark>
-        <div className="px-4.5 py-3.5 bg-rust flex justify-between items-center font-mono text-[12px] font-semibold">
-          <span>OFFLINE · WILL SYNC</span>
-          <span>CODE 4471 VALID</span>
+        <div
+          className={`px-4.5 py-3.5 flex justify-between items-center font-mono text-[12px] font-semibold ${
+            alreadyDone ? "bg-rust" : "bg-ink border-b border-dark-rule-2"
+          }`}
+        >
+          <span>{alreadyDone ? "ALREADY COLLECTED" : `CODE ${commitment.collectionCode} VALID`}</span>
+          <Link href="/hub" className={alreadyDone ? "" : "text-dark-dim-2"}>
+            back to list
+          </Link>
         </div>
-        <div className="px-4.5 py-4.5 border-b border-dark-rule-2">
-          <div className="font-mono text-[11.5px] text-dark-dim-2">SLOT 1 OF 2 · TOLU OKAFOR</div>
-          <div className="font-display text-[26px] tracking-tight mt-1">Weigh the portion</div>
-          <div className="font-mono text-[12.5px] text-dark-dim-2 mt-1.5">
-            Nominal {NOMINAL.toFixed(2)}kg · accept {(NOMINAL * (1 - BAND)).toFixed(2)} to{" "}
-            {(NOMINAL * (1 + BAND)).toFixed(2)}kg
-          </div>
-        </div>
-        <div className="px-4.5 py-4.5 border-b border-dark-rule-2">
-          <div className="border border-dark-rule-2 bg-[#1A1A18] py-5 text-center">
-            <div className="font-mono text-[11.5px] text-dark-dim-2">TYPE WHAT THE SCALE SAYS</div>
-            <div className="font-display text-[52px] sm:text-[56px] tracking-tight">
-              {weight.toFixed(2)}
-              <span className="text-[22px]">kg</span>
+
+        {alreadyDone ? (
+          <div className="px-4.5 py-8">
+            <div className="font-display text-[24px] tracking-tight mb-2">
+              {commitment.memberName || "This member"} already collected
             </div>
-            <div className={`font-mono text-[12px] ${withinBand ? "text-lime" : "text-rust"}`}>
-              {variancePct >= 0 ? "+" : ""}
-              {variancePct.toFixed(1)}% · {withinBand ? "within band" : "outside band"}
-            </div>
+            <p className="text-[15px] leading-relaxed text-dark-dim">
+              Their {commitment.slots} slot{commitment.slots === 1 ? "" : "s"} for #
+              {commitment.poolCode} {commitment.slots === 1 ? "was" : "were"} handed over. If this
+              looks wrong, flag it to the ops desk rather than recording it twice.
+            </p>
           </div>
-          <div className="grid grid-cols-3 gap-2 mt-2.5">
-            {["1", "2", "3", "4", "5", "6", "7", "8", "9", "back", "0", "clr"].map((d) => (
-              <button
-                key={d}
-                onClick={() => (d === "clr" ? setDigits("") : press(d))}
-                className="border border-dark-rule-2 py-3.5 text-center font-mono text-[18px]"
-              >
-                {d === "back" ? "⌫" : d === "clr" ? "C" : d}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="px-4.5 py-4.5">
-          <div className="h-[100px] border border-dashed border-dark-rule-2 flex items-center justify-center text-center font-mono text-[11px] text-dark-dim-2 mb-3 px-3">
-            REQUIRED PHOTO
-            <br />
-            the scale readout with the label visible
-          </div>
-          <div className="flex gap-2">
-            <button className="flex-1 border border-dark-rule-2 text-[14px] font-semibold py-3.5">
-              Take photo
-            </button>
-            <button className="flex-1 border border-dark-rule-2 text-[14px] font-semibold py-3.5">
-              Signature
-            </button>
-          </div>
-        </div>
-        <div className="mt-auto px-4.5 py-4.5 border-t border-dark-rule-2">
-          <p className="font-mono text-[11px] leading-relaxed text-dark-dim-2 mb-3">
-            Recording this offline. If someone else already handed over this slot, the server
-            keeps the first record and flags this one for review.
-          </p>
-          <Btn href="/hub" size="xl" block>
-            Confirm handover, slot 1
-          </Btn>
-        </div>
+        ) : (
+          <HandoverForm
+            commitmentId={commitment.id}
+            hubId={commitment.hubId}
+            memberName={commitment.memberName || "Member"}
+            slots={commitment.slots}
+            nominalKg={parseNominalKg(commitment.unitDescription)}
+            toleranceBand={parseBand(pool?.toleranceBand ?? null)}
+          />
+        )}
       </PhoneShell>
     </div>
   );

@@ -1,38 +1,75 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+
 import { SupplyHeader } from "@/components/nav";
-import { Btn } from "@/components/ui";
+import { requireRole } from "@/lib/auth/dal";
+import { getScorecard } from "@/lib/domain/supply";
+import { formatKobo } from "@/lib/money";
 
 export const metadata = { title: "Scorecard" };
 
-const METRICS = [
-  { label: "On time delivery", value: "94%", pct: 94, note: "38 of 40 deliveries on or before the promised date" },
-  { label: "Yield accuracy, promised against actual", value: "97%", pct: 97, note: "how close your live weight estimates land against QC" },
-  { label: "QC rejection rate", value: "6%", pct: 6, bad: true, note: "one ram rejected on 2 Aug for a visible injury" },
-  { label: "Price stability, 90 days", value: "±2.1%", pct: 18, note: "how much your quoted price moves week to week" },
-];
+export default async function ScorecardPage() {
+  const member = await requireRole("supplier");
+  if (!member.supplierId) redirect("/supply/onboarding");
 
-export default function ScorecardPage() {
+  const card = await getScorecard(member.supplierId);
+  if (!card) redirect("/supply/onboarding");
+
+  const { supplier, totals } = card;
+
+  const metrics = [
+    {
+      label: "On time delivery",
+      value: `${supplier.onTimePct}%`,
+      pct: supplier.onTimePct,
+      note: `${totals.settled} of ${totals.orders} orders settled without a delay claim`,
+    },
+    {
+      label: "Yield accuracy, promised against actual",
+      value: `${supplier.yieldAccuracyPct}%`,
+      pct: supplier.yieldAccuracyPct,
+      note: "how close your live weight estimates land against QC",
+    },
+    {
+      label: "QC rejection rate",
+      value: `${supplier.rejectRatePct}%`,
+      pct: supplier.rejectRatePct,
+      bad: supplier.rejectRatePct > 5,
+      note:
+        totals.failed > 0
+          ? `${totals.failed} order${totals.failed === 1 ? "" : "s"} failed QC and settled short`
+          : "nothing rejected at intake so far",
+    },
+    {
+      label: "Orders delivered to us",
+      value: String(supplier.ordersDelivered),
+      pct: Math.min(100, supplier.ordersDelivered * 5),
+      note: `${formatKobo(totals.valueKobo)} ordered from you in total`,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-paper text-ink">
       <SupplyHeader active="score" />
       <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8">
         <h1 className="font-display text-[28px] tracking-tight mb-2">Your scorecard</h1>
         <p className="text-[15px] leading-relaxed text-text-dim mb-6">
-          These four numbers decide who we call first when a new pool opens. They update after
-          every order.
+          These numbers decide who we call first when a new pool opens. They update after every
+          order.
         </p>
+
         <div className="border border-ink bg-card p-5 mb-5">
           <div className="flex flex-col gap-5">
-            {METRICS.map((m) => (
+            {metrics.map((m) => (
               <div key={m.label}>
-                <div className="flex justify-between text-[15px] mb-1.5">
+                <div className="flex justify-between text-[15px] mb-1.5 gap-3">
                   <span className="font-semibold">{m.label}</span>
                   <span className={`font-mono ${m.bad ? "text-rust-dark" : ""}`}>{m.value}</span>
                 </div>
                 <div className="h-2.5 bg-rule-card relative mb-1.5">
                   <div
                     className={`absolute inset-y-0 left-0 ${m.bad ? "bg-rust-dark" : "bg-ink"}`}
-                    style={{ width: `${m.pct}%` }}
+                    style={{ width: `${Math.min(100, m.pct)}%` }}
                   />
                 </div>
                 <p className="text-[13.5px] text-text-dim">{m.note}</p>
@@ -40,15 +77,19 @@ export default function ScorecardPage() {
             ))}
           </div>
         </div>
+
         <p className="text-[14.5px] leading-relaxed text-text-dim mb-4">
-          Two more rejections inside 90 days moves you out of first call for livestock.
+          {supplier.rejectRatePct > 5
+            ? "Two more rejections inside 90 days moves you out of first call for livestock."
+            : "Keep the rejection rate under 5% and you stay on first call."}
         </p>
-        <div className="flex gap-3">
-          <Btn variant="outline">See the rejection photo</Btn>
-          <Link href="/supply/requests" className="font-semibold text-[14.5px] border-b-2 border-ink self-center">
-            Back to quote requests
-          </Link>
-        </div>
+
+        <Link
+          href="/supply/requests"
+          className="font-semibold text-[14.5px] border-b-2 border-ink"
+        >
+          Back to quote requests
+        </Link>
       </div>
     </div>
   );

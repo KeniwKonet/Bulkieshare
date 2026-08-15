@@ -1,20 +1,33 @@
 import { AdminResourceTable } from "@/components/admin-resource-table";
+import { ToggleAreaButton } from "@/components/staff-forms";
+import { requireOps } from "@/lib/auth/dal";
+import { listAreasWithCounts } from "@/lib/domain/ops";
 
 export const metadata = { title: "Areas" };
 
-export default function AreasPage() {
+export default async function AreasPage() {
+  await requireOps();
+
+  const areas = await listAreasWithCounts();
+
   return (
     <AdminResourceTable
       title="Areas"
-      subtitle="Standard resource table. Generated, not designed."
-      columns="1fr 1fr 1fr 1fr"
-      headers={["AREA", "STATE", "HUBS", "WAITLIST"]}
-      rows={[
-        ["Abuja", "live", "4", "—"],
-        ["Lagos", "not live", "0", "1,204"],
-        ["Enugu", "not live", "0", "340"],
-        ["Port Harcourt", "not live", "0", "118"],
-      ]}
+      subtitle="An area goes live when it has a hub and enough people asking for it."
+      active="areas"
+      columns="1fr .8fr .6fr .7fr .8fr .9fr"
+      headers={["AREA", "STATE", "HUBS", "POOLS", "WAITLIST", ""]}
+      rows={areas.map((a) => [
+        a.label,
+        <span key="s" className={a.isLive ? "text-green" : "text-text-dim"}>
+          {a.isLive ? "live" : "not live"}
+        </span>,
+        String(a.hubs),
+        String(a.pools),
+        String(a.waitlist),
+        <ToggleAreaButton key="t" area={a.slug} live={a.isLive} />,
+      ])}
+      footer={`${areas.filter((a) => a.isLive).length} of ${areas.length} live`}
     />
   );
 }

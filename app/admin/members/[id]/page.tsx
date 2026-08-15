@@ -1,73 +1,118 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
 import { OpsHeader } from "@/components/nav";
-import { Btn, StatGrid } from "@/components/ui";
+import { BlockMemberButton } from "@/components/staff-forms";
+import { StatGrid } from "@/components/ui";
+import { requireOps } from "@/lib/auth/dal";
+import { getMemberDetail, recordAudit } from "@/lib/domain/ops";
+import { listMemberDisputes } from "@/lib/domain/support";
+import { formatKobo, formatKoboSigned } from "@/lib/money";
+import { formatPhone } from "@/lib/phone";
+import { formatEventStamp } from "@/lib/time";
 
 export const metadata = { title: "Member 360" };
 
-const HISTORY: [string, string][] = [
-  ["TUE 07:41", "Unmatched ₦8,400 from A IBRAHIM, possibly for her"],
-  ["MON 19:02", "Overpaid ₦200, resolved to credit"],
-  ["SAT 10:31", "Collected 2 slots at Kuje, 2.61kg and 2.58kg, codes 4471 and 8103"],
-  ["02 AUG", "Paid ₦16,800 for A-2190, 12 beneficiaries named"],
-  ["24 JUL", "Credited ₦740, yield shortfall on A-2214"],
-];
-
 export default async function Member360Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const ops = await requireOps();
+
+  const detail = await getMemberDetail(id);
+  if (!detail) notFound();
+
+  const { member, commitments, credit } = detail;
+  const disputes = await listMemberDisputes(member.id);
+
+  // Looking at someone's full record is itself an auditable act.
+  await recordAudit({
+    actorId: ops.id,
+    actorLabel: ops.name || "Ops desk",
+    action: "member.viewed",
+    subject: member.id,
+  });
+
+  const spentKobo = commitments.reduce((sum, c) => sum + c.paidKobo, 0);
+
+  // One merged, newest-first history from every record we hold on them.
+  const history = [
+    ...commitments.map((c) => ({
+      at: c.createdAt,
+      text: `Paid ${formatKobo(c.paidKobo)} for ${c.slots} slot${c.slots === 1 ? "" : "s"} in ${c.poolTitle} (#${c.poolCode})`,
+    })),
+    ...credit.map((m) => ({
+      at: m.createdAt,
+      text: `${m.label}${m.detail ? ` — ${m.detail}` : ""}: ${formatKoboSigned(m.amountKobo)}`,
+    })),
+    ...disputes.map((d) => ({
+      at: d.createdAt,
+      text: `Raised dispute ${d.reference}: ${d.reasonLabel} (${d.state})`,
+    })),
+  ].sort((a, b) => b.at.getTime() - a.at.getTime());
+
   return (
     <div className="min-h-screen bg-paper text-ink">
       <OpsHeader active="members" />
       <div className="max-w-2xl mx-auto px-5 sm:px-8 py-8">
         <div className="flex justify-between items-center mb-5 flex-wrap gap-2">
           <div>
-            <span className="font-display text-[22px]">Tolu Okafor</span>{" "}
-            <span className="font-mono text-[11.5px] text-text-dim">0803 441 9022</span>
+            <span className="font-display text-[22px]">{member.name || "Unnamed member"}</span>{" "}
+            <span className="font-mono text-[11.5px] text-text-dim">
+              {formatPhone(member.phone)}
+            </span>
           </div>
           <span className="font-mono text-[10.5px] bg-ink text-amber px-2 py-1">
-            VIEW LOGGED · A. NWOSU
+            VIEW LOGGED · {(ops.name || "OPS").toUpperCase()}
           </span>
         </div>
 
         <StatGrid
           columns={4}
           items={[
-            { label: "POOLS", value: "6" },
-            { label: "SPENT", value: "₦174k" },
-            { label: "CREDIT", value: "₦1,940" },
-            { label: "DISPUTES", value: "1" },
+            { label: "POOLS", value: String(commitments.length) },
+            { label: "SPENT", value: formatKobo(spentKobo) },
+            { label: "CREDIT", value: formatKobo(member.creditKobo) },
+            {
+              label: "DISPUTES",
+              value: String(disputes.length),
+              valueClassName: disputes.some((d) => d.state === "open") ? "text-rust-dark" : undefined,
+            },
           ]}
         />
 
         <div className="font-mono text-[11px] text-text-dim mt-6 mb-2.5">
           EVERYTHING THAT HAPPENED, NEWEST FIRST
         </div>
-        <div className="font-mono text-[12.5px]">
-          {HISTORY.map(([at, label], i) => (
-            <div
-              key={at}
-              className={`grid grid-cols-[88px_1fr] py-2 ${
-                i < HISTORY.length - 1 ? "border-b border-rule" : ""
-              }`}
-            >
-              <span className="text-text-dim">{at}</span>
-              <span className="font-sans text-[14px]">{label}</span>
-            </div>
-          ))}
+
+        {history.length === 0 ? (
+          <p className="text-[14.5px] text-text-dim">Nothing on this account yet.</p>
+        ) : (
+          <div className="font-mono text-[12.5px]">
+            {history.map((h, i) => (
+              <div
+                key={`${h.at.toISOString()}-${i}`}
+                className={`grid grid-cols-[110px_1fr] gap-2 py-2 ${
+                  i < history.length - 1 ? "border-b border-rule" : ""
+                }`}
+              >
+                <span className="text-text-dim">{formatEventStamp(h.at)}</span>
+                <span className="font-sans text-[14px]">{h.text}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-2 mt-5 items-center">
+          <BlockMemberButton memberId={member.id} blocked={member.isBlocked} />
+          <Link
+            href="/admin/members"
+            className="border border-ink font-semibold text-[13px] px-3 py-1.5"
+          >
+            Back to members
+          </Link>
         </div>
 
-        <div className="flex flex-wrap gap-2 mt-5">
-          <Btn variant="outline" size="sm">
-            Resend her code
-          </Btn>
-          <Btn variant="outline" size="sm">
-            Add goodwill credit
-          </Btn>
-          <Btn variant="outline-rust" size="sm">
-            Suspend account
-          </Btn>
-        </div>
         <p className="font-mono text-[10.5px] leading-relaxed text-text-dim mt-3">
-          Goodwill above ₦5,000 needs a second approver. Every action here is attributed to you by
-          name. Viewing member #{id} was just logged.
+          Every action here is attributed to you by name. Opening this record was just logged.
         </p>
       </div>
     </div>

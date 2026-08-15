@@ -1,13 +1,30 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+
+import { getCurrentMember } from "@/lib/auth/dal";
+import { getArea } from "@/lib/domain/pools";
+import { getOpsCounts } from "@/lib/domain/ops";
+import { getSupplier } from "@/lib/domain/supply";
+import { formatKobo } from "@/lib/money";
+import { signOut } from "@/app/actions/auth";
 import { Logo } from "./ui";
-import { AREA_LABELS } from "@/lib/mock-data";
 
 /* ---------------------------------------------------------------------- */
 /* Public site                                                             */
 /* ---------------------------------------------------------------------- */
 
-export function SiteHeader({ area }: { area?: string }) {
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "··";
+  return (parts[0][0] + (parts[1]?.[0] ?? "")).toUpperCase();
+}
+
+export async function SiteHeader({ area }: { area?: string }) {
+  const [member, areaRow] = await Promise.all([
+    getCurrentMember(),
+    area ? getArea(area) : Promise.resolve(null),
+  ]);
+
   return (
     <div className="flex items-center justify-between px-5 sm:px-8 py-4 border-b border-ink flex-wrap gap-3">
       <div className="flex items-center gap-6 sm:gap-7 flex-wrap">
@@ -23,17 +40,37 @@ export function SiteHeader({ area }: { area?: string }) {
         </nav>
       </div>
       <div className="flex gap-2.5 items-center">
-        {area && (
+        {areaRow && (
           <span className="font-mono text-[12.5px] border border-ink px-2.5 py-1.5">
-            {AREA_LABELS[area]?.toUpperCase() ?? area.toUpperCase()} · change
+            {areaRow.label.toUpperCase()}
           </span>
         )}
-        <Link href="/join" className="text-[14px] font-semibold hidden sm:inline">
-          Sign in
-        </Link>
-        <Link href="/join" className="bg-ink text-paper text-[14px] font-semibold px-4 py-2.5">
-          Join a pool
-        </Link>
+        {member ? (
+          <>
+            <Link href="/my-pools" className="text-[14px] font-semibold hidden sm:inline">
+              My pools
+            </Link>
+            <Link
+              href="/account"
+              className="w-[30px] h-[30px] bg-ink text-paper flex items-center justify-center text-[13px] font-bold"
+              title={member.name || member.phone}
+            >
+              {initials(member.name || "")}
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link href="/join" className="text-[14px] font-semibold hidden sm:inline">
+              Sign in
+            </Link>
+            <Link
+              href={area ? `/join?next=/${area}/pools` : "/join"}
+              className="bg-ink text-paper text-[14px] font-semibold px-4 py-2.5"
+            >
+              Join a pool
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );
@@ -89,35 +126,32 @@ export function SitePage({ area, children }: { area?: string; children: ReactNod
 /* Member app                                                              */
 /* ---------------------------------------------------------------------- */
 
-export function AppHeader({
+export async function AppHeader({
   active,
-  credit,
   crumb,
 }: {
   active?: "browse" | "my-pools" | "collections" | "credit";
-  credit?: number;
   crumb?: string;
 }) {
-  const linkCls = (key: string) =>
-    `${active === key ? "border-b-2 border-ink pb-0.5" : ""}`;
+  const member = await getCurrentMember();
+  const area = member?.areaSlug ?? "abuja";
+  const linkCls = (key: string) => (active === key ? "border-b-2 border-ink pb-0.5" : "");
+
   return (
     <div className="flex items-center justify-between px-5 sm:px-8 py-4 border-b border-ink flex-wrap gap-3">
       <div className="flex items-center gap-6 sm:gap-7 flex-wrap">
-        <Link href="/abuja/pools">
+        <Link href={`/${area}/pools`}>
           <Logo />
         </Link>
         {crumb ? (
           <span className="font-mono text-[12.5px]">{crumb}</span>
         ) : (
           <nav className="hidden md:flex gap-5 text-[14.5px] font-medium">
-            <Link href="/abuja/pools" className={linkCls("browse")}>
+            <Link href={`/${area}/pools`} className={linkCls("browse")}>
               Open pools
             </Link>
             <Link href="/my-pools" className={linkCls("my-pools")}>
               My pools
-            </Link>
-            <Link href="/collections/a-2190/book" className={linkCls("collections")}>
-              Collections
             </Link>
             <Link href="/account/credit" className={linkCls("credit")}>
               Credit
@@ -127,19 +161,26 @@ export function AppHeader({
       </div>
       <div className="flex gap-2.5 items-center">
         <span className="font-mono text-[12.5px] border border-ink px-2.5 py-1.5 hidden sm:inline">
-          ABUJA · change
+          {area.toUpperCase()}
         </span>
-        {credit !== undefined && (
+        {member && member.creditKobo !== 0 && (
           <span className="font-mono text-[12.5px] bg-ink text-lime px-2.5 py-1.5">
-            CREDIT {credit.toLocaleString("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).replace("NGN", "₦")}
+            CREDIT {formatKobo(member.creditKobo)}
           </span>
         )}
-        <Link
-          href="/account"
-          className="w-[30px] h-[30px] bg-ink text-paper flex items-center justify-center text-[13px] font-bold"
-        >
-          TO
-        </Link>
+        {member ? (
+          <Link
+            href="/account"
+            className="w-[30px] h-[30px] bg-ink text-paper flex items-center justify-center text-[13px] font-bold"
+            title={member.name || member.phone}
+          >
+            {initials(member.name || "")}
+          </Link>
+        ) : (
+          <Link href="/join" className="text-[14px] font-semibold">
+            Sign in
+          </Link>
+        )}
       </div>
     </div>
   );
@@ -178,6 +219,17 @@ export function PhoneShell({
   );
 }
 
+/** Sign-out is a mutation, so it is a form post rather than a link. */
+export function SignOutButton({ className = "" }: { className?: string }) {
+  return (
+    <form action={signOut}>
+      <button type="submit" className={className}>
+        Sign out
+      </button>
+    </form>
+  );
+}
+
 /* ---------------------------------------------------------------------- */
 /* Coordinator                                                             */
 /* ---------------------------------------------------------------------- */
@@ -186,23 +238,21 @@ export function GroupsShell({
   org,
   orgName,
   active,
+  rosterPoolId,
   sideExtra,
   children,
 }: {
   org: string;
   orgName: string;
   active: "overview" | "roster" | "new" | "members" | "fees";
+  rosterPoolId?: string | null;
   sideExtra?: ReactNode;
   children: ReactNode;
 }) {
   const item = (key: string, label: string, href: string) => (
     <Link
       href={href}
-      className={
-        active === key
-          ? "font-bold bg-lime px-2.5 py-1.5 -mx-2.5"
-          : "font-medium"
-      }
+      className={active === key ? "font-bold bg-lime px-2.5 py-1.5 -mx-2.5" : "font-medium"}
     >
       {label}
     </Link>
@@ -219,12 +269,13 @@ export function GroupsShell({
         </div>
         <div className="flex flex-col gap-2.5 text-[15px]">
           {item("overview", "Overview", `/groups/${org}`)}
-          {item("roster", "Live roster", `/groups/${org}/pools/a-2231`)}
+          {rosterPoolId && item("roster", "Live roster", `/groups/${org}/pools/${rosterPoolId}`)}
           {item("new", "Open a pool", `/groups/${org}/pools/new`)}
           {item("members", "Members", `/groups/${org}/members`)}
           {item("fees", "My fees", `/groups/${org}/fees`)}
         </div>
         {sideExtra}
+        <SignOutButton className="font-mono text-[11.5px] text-text-dim text-left mt-auto" />
       </div>
       <div className="p-6 sm:p-8">{children}</div>
     </div>
@@ -235,14 +286,20 @@ export function GroupsShell({
 /* Supplier                                                                 */
 /* ---------------------------------------------------------------------- */
 
-export function SupplyHeader({ active }: { active: "orders" | "requests" | "payouts" | "score" }) {
-  const cls = (key: string) =>
-    active === key ? "font-semibold border-b-2 border-ink pb-0.5" : "";
+export async function SupplyHeader({
+  active,
+}: {
+  active: "orders" | "requests" | "payouts" | "score";
+}) {
+  const member = await getCurrentMember();
+  const supplier = member?.supplierId ? await getSupplier(member.supplierId) : null;
+  const cls = (key: string) => (active === key ? "font-semibold border-b-2 border-ink pb-0.5" : "");
+
   return (
     <div className="flex items-center justify-between px-5 sm:px-8 py-4 border-b border-ink flex-wrap gap-3">
       <div className="flex gap-5 sm:gap-6 items-center text-[14.5px] flex-wrap">
-        <span className="font-bold">Kuje Livestock Aggregators</span>
-        <Link href="/supply/orders/po-8859" className={cls("orders")}>
+        <span className="font-bold">{supplier?.name ?? "Supplier"}</span>
+        <Link href="/supply/orders" className={cls("orders")}>
           Orders
         </Link>
         <Link href="/supply/requests" className={cls("requests")}>
@@ -256,7 +313,7 @@ export function SupplyHeader({ active }: { active: "orders" | "requests" | "payo
         </Link>
       </div>
       <span className="font-mono text-[12px] bg-ink text-lime px-2.5 py-1.5">
-        KYC VERIFIED · STANDARD SIGNED
+        {supplier?.isApproved ? "KYC VERIFIED · STANDARD SIGNED" : "ONBOARDING IN REVIEW"}
       </span>
     </div>
   );
@@ -266,16 +323,30 @@ export function SupplyHeader({ active }: { active: "orders" | "requests" | "payo
 /* Ops back office                                                         */
 /* ---------------------------------------------------------------------- */
 
-export function OpsHeader({
+export async function OpsHeader({
   active,
 }: {
-  active: "pools" | "payments" | "refunds" | "intake" | "allocation" | "disputes" | "reconciliation" | "members";
+  active:
+    | "pools"
+    | "payments"
+    | "refunds"
+    | "intake"
+    | "disputes"
+    | "reconciliation"
+    | "members"
+    | "suppliers"
+    | "groups"
+    | "hubs"
+    | "areas"
+    | "audit";
 }) {
+  const [member, counts] = await Promise.all([getCurrentMember(), getOpsCounts()]);
   const cls = (key: string) => (active === key ? "text-lime" : "");
+
   return (
     <div className="flex items-center justify-between px-5 sm:px-6 py-3 bg-ink text-paper flex-wrap gap-3">
       <div className="flex gap-4 sm:gap-5 items-center font-mono text-[12.5px] flex-wrap">
-        <span className="font-semibold">OPS · ABUJA</span>
+        <span className="font-semibold">OPS</span>
         <Link href="/admin/pools" className={cls("pools")}>
           Pools
         </Link>
@@ -285,11 +356,11 @@ export function OpsHeader({
         <Link href="/admin/refunds" className={cls("refunds")}>
           Refunds
         </Link>
-        <Link href="/admin/intake/po-8859" className={cls("intake")}>
-          Intake
+        <Link href="/admin/suppliers" className={cls("suppliers")}>
+          Suppliers
         </Link>
-        <Link href="/admin/pools/a-2190/allocation" className={cls("allocation")}>
-          Allocation
+        <Link href="/admin/groups" className={cls("groups")}>
+          Co-ops
         </Link>
         <Link href="/admin/disputes" className={cls("disputes")}>
           Disputes
@@ -297,13 +368,28 @@ export function OpsHeader({
         <Link href="/admin/reconciliation" className={cls("reconciliation")}>
           Reconciliation
         </Link>
-        <Link href="/admin/members/4471" className={cls("members")}>
+        <Link href="/admin/members" className={cls("members")}>
           Members
         </Link>
+        <Link href="/admin/hubs" className={cls("hubs")}>
+          Hubs
+        </Link>
+        <Link href="/admin/areas" className={cls("areas")}>
+          Areas
+        </Link>
+        <Link href="/admin/audit" className={cls("audit")}>
+          Audit
+        </Link>
       </div>
-      <div className="hidden lg:flex gap-4 font-mono text-[12.5px]">
-        <span className="text-amber">3 refunds awaiting second approval</span>
-        <span>A. NWOSU · TUE 13 AUG 08:14</span>
+      <div className="hidden lg:flex gap-4 font-mono text-[12.5px] items-center">
+        {counts.breachingDisputes > 0 && (
+          <span className="text-rust">{counts.breachingDisputes} disputes breaching</span>
+        )}
+        {counts.unmatched > 0 && (
+          <span className="text-amber">{counts.unmatched} unmatched transfers</span>
+        )}
+        <span>{member?.name?.toUpperCase() ?? "OPS"}</span>
+        <SignOutButton className="text-dark-dim-2" />
       </div>
     </div>
   );

@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
 import { SitePage } from "@/components/nav";
 import { Btn, PhotoPlaceholder, PoolProgress } from "@/components/ui";
-import { formatNaira, getPool, slotsLeftLabel } from "@/lib/mock-data";
+import { getCurrentMember } from "@/lib/auth/dal";
+import { getPool } from "@/lib/domain/pools";
+import { formatKobo, slotsLeftLabel } from "@/lib/money";
 
 export async function generateMetadata({
   params,
@@ -10,8 +14,8 @@ export async function generateMetadata({
   params: Promise<{ area: string; id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const pool = getPool(id);
-  return { title: pool.title };
+  const pool = await getPool(id);
+  return { title: pool?.title ?? "Pool" };
 }
 
 export default async function PoolDetail({
@@ -20,17 +24,18 @@ export default async function PoolDetail({
   params: Promise<{ area: string; id: string }>;
 }) {
   const { area, id } = await params;
-  const pool = getPool(id);
-  const slotsLeft = pool.totalSlots - pool.paidSlots - pool.reservedUnpaidSlots;
-  const thresholdMet = pool.paidSlots + pool.reservedUnpaidSlots >= pool.threshold;
+  const [pool, member] = await Promise.all([getPool(id), getCurrentMember()]);
+  if (!pool) notFound();
+
+  const creditKobo = member?.creditKobo ?? 0;
+  const creditApplied = Math.min(creditKobo, pool.pricePerSlotKobo);
+  const oneSlotDue = pool.pricePerSlotKobo - creditApplied;
 
   return (
     <SitePage area={area}>
       <div className="max-w-6xl mx-auto">
         <div className="px-5 sm:px-8 py-3.5 border-b border-ink">
-          <span className="font-mono text-[12.5px]">
-            OPEN POOLS / #{pool.code}
-          </span>
+          <span className="font-mono text-[12.5px]">OPEN POOLS / #{pool.code}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_.95fr]">
@@ -46,7 +51,7 @@ export default async function PoolDetail({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-ink border border-ink mb-6">
               <div className="bg-card p-4">
                 <div className="font-mono text-[11.5px] text-text-dim">WHAT ONE SLOT IS</div>
-                <div className="text-[17px] font-semibold">{pool.unitDescription.split(/\.\s/)[0]}</div>
+                <div className="text-[17px] font-semibold">{pool.unitDescription}</div>
               </div>
               {pool.toleranceBand && (
                 <div className="bg-card p-4">
@@ -57,7 +62,7 @@ export default async function PoolDetail({
               <div className="bg-card p-4">
                 <div className="font-mono text-[11.5px] text-text-dim">COLLECT AT</div>
                 <div className="text-[17px] font-semibold">
-                  {pool.hubName}, {pool.shareDate}
+                  {pool.hubName}, {pool.shareDateLabel}
                 </div>
               </div>
               {pool.cutsBreakdown && (
@@ -74,10 +79,11 @@ export default async function PoolDetail({
                   How the cuts are shared out
                 </h3>
                 <p className="text-[15.5px] leading-relaxed text-text-dim max-w-[62ch] mb-6">
-                  A {pool.title.toLowerCase()} does not divide into identical portions, so we run
-                  a published algorithm with a seed we post before allocation. If you drew below
-                  average last time, you are prioritised this time. The full allocation table
-                  goes to every member before anybody collects.
+                  A {pool.title.toLowerCase()} does not divide into identical portions, so we run a
+                  published algorithm with a seed we post before allocation
+                  {pool.allocationSeed ? ` (this pool's seed is ${pool.allocationSeed})` : ""}. If
+                  you drew below average last time, you are prioritised this time. The full
+                  allocation table goes to every member before anybody collects.
                 </p>
               </>
             )}
@@ -87,69 +93,83 @@ export default async function PoolDetail({
             </h3>
             <p className="text-[15.5px] leading-relaxed text-text-dim max-w-[62ch]">
               {pool.threshold} slots is the minimum for this to be worth buying. Below that at
-              closing time, the pool is cancelled and every naira goes back to the account it
-              came from within 24 hours. You can also pull out yourself any time before 72 hours
-              before closing.
+              closing time, the pool is cancelled and every naira goes back to the account it came
+              from within 24 hours. You can also pull out yourself any time before the pool closes.
             </p>
           </div>
 
           <div className="px-5 sm:px-8 py-8">
             <div className="border border-ink bg-card p-5 lg:sticky lg:top-5">
-              {pool.state === "open" && (
+              {pool.isOpen && (
                 <>
                   <div className="flex justify-between items-baseline mb-2">
-                    <span className="font-display text-[30px]">{slotsLeftLabel(slotsLeft)}</span>
+                    <span className="font-display text-[30px]">
+                      {slotsLeftLabel(pool.slotsLeft)}
+                    </span>
                     <span className="font-mono text-[13px]">
                       {pool.paidSlots} / {pool.totalSlots} paid
                     </span>
                   </div>
                   <PoolProgress pool={pool} height={24} />
                   <div className="font-mono text-[12.5px] bg-ink text-lime px-2.5 py-2 text-center my-5">
-                    CLOSES {pool.closesAt.toUpperCase()}
+                    CLOSES {pool.closesAtLabel.toUpperCase()}
                   </div>
 
                   <div className="border-t border-rule pt-4 mb-4">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="text-[15px] font-semibold">How many slots?</span>
-                      <div className="flex border border-ink">
-                        <span className="px-3.5 py-2 border-r border-ink">−</span>
-                        <span className="px-4.5 py-2 font-mono font-semibold">1</span>
-                        <span className="px-3.5 py-2 border-l border-ink">+</span>
-                      </div>
+                    <div className="flex justify-between text-[14.5px] py-1.5 text-text-dim">
+                      <span>1 × {formatKobo(pool.pricePerSlotKobo)}</span>
+                      <span className="font-mono">{formatKobo(pool.pricePerSlotKobo)}</span>
                     </div>
                     <div className="flex justify-between text-[14.5px] py-1.5 text-text-dim">
-                      <span>1 × {formatNaira(pool.pricePerSlot)}</span>
-                      <span className="font-mono">{formatNaira(pool.pricePerSlot)}</span>
-                    </div>
-                    <div className="flex justify-between text-[14.5px] py-1.5 text-text-dim border-b border-rule">
                       <span>Hub collection</span>
                       <span className="font-mono">free</span>
                     </div>
-                    <div className="flex justify-between items-baseline pt-3">
-                      <span className="text-[16px] font-bold">To pay now, in full</span>
-                      <span className="font-display text-[28px]">{formatNaira(pool.pricePerSlot)}</span>
+                    {creditApplied > 0 && (
+                      <div className="flex justify-between text-[14.5px] py-1.5 text-text-dim">
+                        <span>Your store credit</span>
+                        <span className="font-mono">−{formatKobo(creditApplied)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-baseline pt-3 border-t border-rule">
+                      <span className="text-[16px] font-bold">One slot costs</span>
+                      <span className="font-display text-[28px]">{formatKobo(oneSlotDue)}</span>
                     </div>
                   </div>
 
                   <Btn href={`/pools/${pool.id}/reserve`} block size="xl" className="mb-2.5">
-                    Reserve 1 slot
+                    Reserve a slot
                   </Btn>
-                  <p className="font-mono text-[11.5px] leading-relaxed text-text-dim mb-3.5">
+                  <p className="font-mono text-[11.5px] leading-relaxed text-text-dim">
                     Reserving holds your slot for 20 minutes while you transfer. No card needed.
                   </p>
-                  <label className="flex gap-2.5 items-start text-[14px] leading-snug text-text-mid border-t border-rule pt-3.5">
-                    <span className="w-4 h-4 border border-ink bg-ink text-lime text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">
-                      ✓
-                    </span>
-                    <span>
-                      I can collect at <b>{pool.hubName} on {pool.shareDate}</b>. This pool is not
-                      delivered.
-                    </span>
-                  </label>
+
+                  {!pool.thresholdPassed && (
+                    <p className="text-[13px] text-rust font-mono mt-3">
+                      threshold {pool.threshold} not yet met
+                    </p>
+                  )}
                 </>
               )}
 
-              {pool.state === "underfilled" && (
+              {pool.state === "open" && !pool.isOpen && (
+                <>
+                  <span className="font-mono text-[12px] bg-ink text-lime px-2 py-1">
+                    {pool.slotsLeft === 0 ? "FULL" : "CLOSED"}
+                  </span>
+                  <div className="font-display text-[26px] tracking-tight mt-3 mb-2">
+                    {pool.slotsLeft === 0 ? "Every slot is taken" : "This pool has closed"}
+                  </div>
+                  <PoolProgress pool={pool} height={20} />
+                  <p className="text-[15px] leading-relaxed text-text-mid mt-4">
+                    We open a pool like this most weeks at {pool.hubName}.
+                  </p>
+                  <Btn href={`/${area}/pools`} block size="lg" className="mt-4">
+                    See what is open
+                  </Btn>
+                </>
+              )}
+
+              {(pool.state === "underfilled" || pool.state === "refunding") && (
                 <>
                   <span className="font-mono text-[12px] bg-rust text-white px-2 py-1">
                     UNDERFILLED · CANCELLED
@@ -160,41 +180,44 @@ export default async function PoolDetail({
                   <PoolProgress pool={pool} height={20} />
                   <p className="text-[15px] leading-relaxed text-text-mid mt-4">
                     {pool.paidSlots} of {pool.threshold} needed joined. Nothing was bought and
-                    everyone was refunded in full within 24 hours.
+                    everyone was refunded in full.
                   </p>
                 </>
               )}
 
-              {pool.state === "completed" && (
+              {(pool.state === "completed" ||
+                pool.state === "funded" ||
+                pool.state === "distributing" ||
+                pool.state === "allocating") && (
                 <>
                   <span className="font-mono text-[12px] bg-green text-white px-2 py-1">
-                    COMPLETED
+                    {pool.state.toUpperCase()}
                   </span>
                   <div className="font-display text-[26px] tracking-tight mt-3 mb-2">
-                    {pool.paidSlots} of {pool.totalSlots} slots collected
+                    {pool.paidSlots} of {pool.totalSlots} slots taken
                   </div>
                   <PoolProgress pool={pool} height={20} showCaption={false} />
                   <p className="text-[15px] leading-relaxed text-text-mid mt-4 mb-4">
-                    This pool ran to completion. Read the full breakdown of weights, cost and
-                    allocation.
+                    {pool.state === "completed"
+                      ? "This pool ran to completion. Read the full breakdown of weights, cost and allocation."
+                      : `Funded and buying. Share date is ${pool.shareDateLabel} at ${pool.hubName}.`}
                   </p>
-                  <Btn href={`/${area}/pools/${pool.id}/report`} block size="lg">
-                    Read the public report
-                  </Btn>
+                  {pool.state === "completed" && (
+                    <Btn href={`/${area}/pools/${pool.id}/report`} block size="lg">
+                      Read the public report
+                    </Btn>
+                  )}
                 </>
-              )}
-
-              {!thresholdMet && pool.state === "open" && (
-                <p className="text-[13px] text-rust font-mono mt-3">
-                  threshold {pool.threshold} not yet met
-                </p>
               )}
             </div>
           </div>
         </div>
 
         <div className="px-5 sm:px-8 pb-8">
-          <Link href={`/${area}/pools`} className="text-[14.5px] font-semibold border-b-2 border-ink">
+          <Link
+            href={`/${area}/pools`}
+            className="text-[14.5px] font-semibold border-b-2 border-ink"
+          >
             ← Back to all pools
           </Link>
         </div>

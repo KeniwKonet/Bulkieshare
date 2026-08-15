@@ -1,60 +1,62 @@
 import { OpsHeader } from "@/components/nav";
-import { Btn } from "@/components/ui";
-import { Stepper } from "@/components/interactive";
+import { CreatePoolForm } from "@/components/staff-forms";
+import { requireOps } from "@/lib/auth/dal";
+import { listAreas, listHubs } from "@/lib/domain/pools";
 
 export const metadata = { title: "Open a pool" };
 
-export default function NewPoolPage() {
+export default async function NewPoolPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ area?: string }>;
+}) {
+  await requireOps();
+  const { area } = await searchParams;
+
+  const areas = await listAreas();
+  const areaSlug = area ?? areas.find((a) => a.isLive)?.slug ?? areas[0]?.slug ?? "abuja";
+  const hubs = await listHubs(areaSlug);
+
   return (
     <div className="min-h-screen bg-paper text-ink">
       <OpsHeader active="pools" />
       <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8">
         <h1 className="font-display text-[28px] tracking-tight mb-1">Pool builder</h1>
-        <p className="text-[15px] text-text-dim mb-6">
-          Policy snapshot, threshold, shortfall rule and quote expiry constraint — set once, then
-          locked to this pool for its whole life.
+        <p className="text-[15px] text-text-dim mb-6 max-w-[62ch]">
+          Threshold and shortfall rule are set once here and locked to this pool for its whole
+          life, so nothing can be argued about after it closes.
         </p>
 
-        <div className="border border-ink bg-card p-5 mb-5">
-          <div className="font-mono text-[11.5px] text-text-dim mb-3">SOURCE QUOTE</div>
-          <div className="flex justify-between text-[15px] py-2 border-b border-rule-card">
-            <span className="text-text-dim">Supplier</span>
-            <span className="font-semibold">Kuje Livestock Aggregators</span>
-          </div>
-          <div className="flex justify-between text-[15px] py-2 border-b border-rule-card">
-            <span className="text-text-dim">Quote price</span>
-            <span className="font-mono font-semibold">₦271,500 / head</span>
-          </div>
-          <div className="flex justify-between text-[15px] py-2">
-            <span className="text-text-dim">Quote expires</span>
-            <span className="font-mono font-semibold text-rust">28 Aug 2026</span>
-          </div>
+        <div className="flex gap-2 flex-wrap mb-6">
+          {areas.map((a) => (
+            <a
+              key={a.slug}
+              href={`/admin/pools/new?area=${a.slug}`}
+              className={`font-mono text-[11.5px] px-2.5 py-1.5 border ${
+                a.slug === areaSlug ? "bg-ink text-paper border-ink" : "border-rule"
+              }`}
+            >
+              {a.label.toUpperCase()}
+              {a.isLive ? "" : " · NOT LIVE"}
+            </a>
+          ))}
         </div>
 
-        <div className="border border-ink bg-card p-5 mb-5">
-          <div className="font-mono text-[11.5px] text-text-dim mb-3">POOL PARAMETERS</div>
-          <div className="flex justify-between items-center py-2.5 border-b border-rule-card">
-            <span className="text-[15px] font-semibold">Total slots</span>
-            <Stepper min={10} max={60} />
+        {hubs.length === 0 ? (
+          <div className="border border-rust bg-card p-5">
+            <div className="font-display text-[20px] tracking-tight mb-1.5">
+              No hubs in this area
+            </div>
+            <p className="text-[14.5px] text-text-dim leading-relaxed">
+              A pool needs somewhere to collect from. Add a hub before opening a pool here.
+            </p>
           </div>
-          <div className="flex justify-between items-center py-2.5 border-b border-rule-card">
-            <span className="text-[15px] font-semibold">Threshold to proceed</span>
-            <Stepper min={10} max={40} />
-          </div>
-          <div className="flex justify-between items-center py-2.5">
-            <span className="text-[15px] font-semibold">Closes before quote expires by</span>
-            <span className="font-mono text-[14px]">36 hours minimum</span>
-          </div>
-        </div>
-
-        <div className="border border-amber bg-card p-4 mb-6 text-[14px] leading-relaxed">
-          Closing time must land before 28 Aug — the quote expiry. The pool builder will not let
-          you save a closing time after that date.
-        </div>
-
-        <Btn variant="dark" size="lg">
-          Save and open the pool
-        </Btn>
+        ) : (
+          <CreatePoolForm
+            areaSlug={areaSlug}
+            hubs={hubs.map((h) => ({ id: h.id, name: h.name }))}
+          />
+        )}
       </div>
     </div>
   );
