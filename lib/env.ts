@@ -73,10 +73,13 @@ export const env = {
  * gun: with it on, the sign-in code is shown on screen, which means anyone who
  * can reach the URL can sign in as anyone, including the ops desk.
  *
- * Only ever set it on a throwaway deployment with seeded data. Never alongside
- * a real DATABASE_URL.
+ * It is therefore interlocked with the database: setting `DATABASE_URL` turns
+ * demo mode off no matter what the flag says. Pointing this app at a real
+ * Postgres is the clearest possible signal that it is no longer a toy, and the
+ * flag being committed in `vercel.json` must never be able to follow it there.
  */
-export const isDemoMode = process.env.DEMO_MODE === "1";
+export const isDemoMode =
+  process.env.DEMO_MODE === "1" && !optional("DATABASE_URL");
 
 /**
  * Whether the development stand-ins may be used at all.
