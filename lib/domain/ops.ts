@@ -121,12 +121,14 @@ export async function searchMembers(query?: string) {
       creditKobo: s.members.creditKobo,
       isBlocked: s.members.isBlocked,
       createdAt: s.members.createdAt,
+      // Qualified literally: this query has no join, so an interpolated
+      // members.id would render bare and bind to the subquery's own id.
       pools: sql<number>`(
-        select count(*)::int from ${s.commitments} c where c.member_id = ${s.members.id}
+        select count(*)::int from ${s.commitments} c where c.member_id = members.id
       )`,
       openDisputes: sql<number>`(
         select count(*)::int from ${s.disputes} d
-        where d.member_id = ${s.members.id} and d.state in ('open','investigating')
+        where d.member_id = members.id and d.state in ('open','investigating')
       )`,
     })
     .from(s.members)
@@ -307,9 +309,10 @@ export async function listAreasWithCounts() {
       label: s.areas.label,
       isLive: s.areas.isLive,
       waitlistCount: s.areas.waitlistCount,
-      hubs: sql<number>`(select count(*)::int from ${s.hubs} h where h.area_slug = ${s.areas.slug})`,
-      pools: sql<number>`(select count(*)::int from ${s.pools} p where p.area_slug = ${s.areas.slug})`,
-      waitlist: sql<number>`(select count(*)::int from ${s.waitlist} w where w.area_slug = ${s.areas.slug})`,
+      // Qualified literally, for the same reason as searchMembers above.
+      hubs: sql<number>`(select count(*)::int from ${s.hubs} h where h.area_slug = areas.slug)`,
+      pools: sql<number>`(select count(*)::int from ${s.pools} p where p.area_slug = areas.slug)`,
+      waitlist: sql<number>`(select count(*)::int from ${s.waitlist} w where w.area_slug = areas.slug)`,
     })
     .from(s.areas)
     .orderBy(desc(s.areas.isLive));

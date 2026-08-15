@@ -60,8 +60,10 @@ export async function listGroupsForCoordinator(coordinatorId: string) {
       id: s.groups.id,
       slug: s.groups.slug,
       name: s.groups.name,
+      // Qualified literally: no join here, so an interpolated groups.id would
+      // render bare and bind to group_members.id inside the subquery.
       memberCount: sql<number>`(
-        select count(*)::int from ${s.groupMembers} gm where gm.group_id = ${s.groups.id}
+        select count(*)::int from ${s.groupMembers} gm where gm.group_id = groups.id
       )`,
     })
     .from(s.groups)

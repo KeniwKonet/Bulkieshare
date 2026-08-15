@@ -310,9 +310,11 @@ export async function listSuppliers() {
       onTimePct: s.suppliers.onTimePct,
       rejectRatePct: s.suppliers.rejectRatePct,
       isApproved: s.suppliers.isApproved,
+      // Qualified literally: no join here, so an interpolated suppliers.id
+      // would render bare and bind to purchase_orders.id inside the subquery.
       openOrders: sql<number>`(
         select count(*)::int from ${s.purchaseOrders} p
-        where p.supplier_id = ${s.suppliers.id} and p.state not in ('settled','cancelled')
+        where p.supplier_id = suppliers.id and p.state not in ('settled','cancelled')
       )`,
     })
     .from(s.suppliers)

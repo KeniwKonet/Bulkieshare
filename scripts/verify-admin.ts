@@ -204,6 +204,52 @@ async function main() {
     .limit(1);
   check("keeps the role while another group remains", stillCoordinator.role, "coordinator");
 
+  console.log("\n10. Correlated subqueries count the right rows");
+  // Drizzle only qualifies column references when a query has a join. In a
+  // join-free query an interpolated `table.column` renders as a bare "column",
+  // which then binds to the subquery's own table if it happens to have a column
+  // by that name — silently returning zero instead of erroring. These counts
+  // all come from join-free queries, so they are the canaries for that.
+  const { listHubs } = await import("../lib/domain/pools");
+  const { searchMembers, listAreasWithCounts } = await import("../lib/domain/ops");
+  const { listSuppliers } = await import("../lib/domain/supply");
+  const { listGroupsForCoordinator } = await import("../lib/domain/groups");
+
+  const hubs = await listHubs("abuja");
+  check(
+    "hubs report the pools that are open at them",
+    hubs.filter((h) => h.openPools > 0).map((h) => `${h.id}:${h.openPools}`).sort(),
+    ["karu:1", "lugbe:1", "wuse:2"],
+  );
+
+  const people = await searchMembers();
+  checkThat(
+    "members report the pools they joined",
+    people.some((m) => m.pools > 0),
+    "every member reported zero pools",
+  );
+
+  const withOrders = await listSuppliers();
+  checkThat(
+    "suppliers report their open purchase orders",
+    withOrders.some((sup) => sup.openOrders > 0),
+    "every supplier reported zero open orders",
+  );
+
+  const areasCounted = await listAreasWithCounts();
+  check(
+    "abuja reports its hubs",
+    areasCounted.find((a) => a.slug === "abuja")?.hubs,
+    4,
+  );
+
+  const aishaGroups = await listGroupsForCoordinator(aisha.id);
+  checkThat(
+    "a coordinator's groups report their member counts",
+    aishaGroups.length > 0 && aishaGroups.some((g) => g.memberCount > 0),
+    JSON.stringify(aishaGroups),
+  );
+
   await client.close();
   console.log(`\n${failures === 0 ? "All checks passed." : `${failures} check(s) FAILED.`}`);
   process.exit(failures === 0 ? 0 : 1);

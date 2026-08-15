@@ -193,9 +193,14 @@ export async function listHubs(areaSlug?: string) {
       windows: s.hubs.windows,
       capacityPerHour: s.hubs.capacityPerHour,
       notes: s.hubs.notes,
+      // The outer column is written qualified and literally, not interpolated.
+      // Drizzle only qualifies column references when a query has a join, and
+      // this one does not — an interpolated `hubs.id` would render as a bare
+      // "id", which inside this subquery binds to pools.id and silently
+      // compares every pool's hub against its own id.
       openPools: sql<number>`(
         select count(*)::int from ${s.pools} p
-        where p.hub_id = ${s.hubs.id} and p.state = 'open' and p.closes_at > ${now}
+        where p.hub_id = hubs.id and p.state = 'open' and p.closes_at > ${now}
       )`,
     })
     .from(s.hubs)
