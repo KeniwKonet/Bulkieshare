@@ -289,7 +289,7 @@ export function GroupsShell({
 export async function SupplyHeader({
   active,
 }: {
-  active: "orders" | "requests" | "payouts" | "score";
+  active: "orders" | "requests" | "quotes" | "payouts" | "score";
 }) {
   const member = await getCurrentMember();
   const supplier = member?.supplierId ? await getSupplier(member.supplierId) : null;
@@ -304,6 +304,9 @@ export async function SupplyHeader({
         </Link>
         <Link href="/supply/requests" className={cls("requests")}>
           Quote requests
+        </Link>
+        <Link href="/supply/quotes" className={cls("quotes")}>
+          My quotes
         </Link>
         <Link href="/supply/payouts" className={cls("payouts")}>
           Payouts
@@ -327,6 +330,7 @@ export async function OpsHeader({
   active,
 }: {
   active:
+    | "home"
     | "pools"
     | "payments"
     | "refunds"
@@ -335,6 +339,7 @@ export async function OpsHeader({
     | "reconciliation"
     | "members"
     | "suppliers"
+    | "procurement"
     | "groups"
     | "hubs"
     | "areas"
@@ -346,7 +351,9 @@ export async function OpsHeader({
   return (
     <div className="flex items-center justify-between px-5 sm:px-6 py-3 bg-ink text-paper flex-wrap gap-3">
       <div className="flex gap-4 sm:gap-5 items-center font-mono text-[12.5px] flex-wrap">
-        <span className="font-semibold">OPS</span>
+        <Link href="/admin" className={"font-semibold " + cls("home")}>
+          OPS
+        </Link>
         <Link href="/admin/pools" className={cls("pools")}>
           Pools
         </Link>
@@ -355,6 +362,9 @@ export async function OpsHeader({
         </Link>
         <Link href="/admin/refunds" className={cls("refunds")}>
           Refunds
+        </Link>
+        <Link href="/admin/procurement" className={cls("procurement")}>
+          Buying
         </Link>
         <Link href="/admin/suppliers" className={cls("suppliers")}>
           Suppliers

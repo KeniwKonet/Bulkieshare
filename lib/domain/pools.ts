@@ -180,7 +180,17 @@ export async function getArea(slug: string) {
   return row ?? null;
 }
 
-export async function listHubs(areaSlug?: string) {
+/**
+ * Hubs, active ones only unless asked otherwise.
+ *
+ * A closed hub keeps its history and stays reachable in the back office, but
+ * must never be offered to a member as a place to collect, nor to ops as
+ * somewhere to point a new pool.
+ */
+export async function listHubs(
+  areaSlug?: string,
+  options?: { includeInactive?: boolean },
+) {
   const db = await getDb();
   const now = new Date();
   const rows = await db
@@ -193,6 +203,7 @@ export async function listHubs(areaSlug?: string) {
       windows: s.hubs.windows,
       capacityPerHour: s.hubs.capacityPerHour,
       notes: s.hubs.notes,
+      isActive: s.hubs.isActive,
       // The outer column is written qualified and literally, not interpolated.
       // Drizzle only qualifies column references when a query has a join, and
       // this one does not — an interpolated `hubs.id` would render as a bare
@@ -204,13 +215,20 @@ export async function listHubs(areaSlug?: string) {
       )`,
     })
     .from(s.hubs)
-    .where(areaSlug ? eq(s.hubs.areaSlug, areaSlug) : undefined)
+    .where(
+      and(
+        areaSlug ? eq(s.hubs.areaSlug, areaSlug) : undefined,
+        options?.includeInactive ? undefined : eq(s.hubs.isActive, true),
+      ),
+    )
     .orderBy(asc(s.hubs.name));
   return rows;
 }
 
 export async function getHub(id: string) {
-  const [hub] = await listHubs().then((rows) => rows.filter((h) => h.id === id));
+  const [hub] = await listHubs(undefined, { includeInactive: true }).then((rows) =>
+    rows.filter((h) => h.id === id),
+  );
   return hub ?? null;
 }
 

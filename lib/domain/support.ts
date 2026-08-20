@@ -281,6 +281,8 @@ export async function grantCredit(input: {
   detail?: string;
   amountKobo: number;
   poolId?: string;
+  /** Who granted it. Discretionary credit has to be attributable. */
+  actorId?: string;
 }): Promise<void> {
   const db = await getDb();
   await db.transaction(async (tx) => {
@@ -295,6 +297,18 @@ export async function grantCredit(input: {
       .update(s.members)
       .set({ creditKobo: sql`${s.members.creditKobo} + ${input.amountKobo}` })
       .where(eq(s.members.id, input.memberId));
+
+    // Credit is money. When a person decided to hand it over rather than a
+    // rule producing it, the audit trail has to name them.
+    if (input.actorId) {
+      await tx.insert(s.auditEvents).values({
+        actorId: input.actorId,
+        actorLabel: "Ops desk",
+        action: "credit.granted",
+        subject: input.memberId,
+        detail: { amountKobo: input.amountKobo, label: input.label, reason: input.detail ?? "" },
+      });
+    }
   });
 }
 

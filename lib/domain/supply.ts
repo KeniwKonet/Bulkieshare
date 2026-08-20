@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, sql } from "drizzle-orm";
 
 import { getDb } from "../db";
 import * as s from "../db/schema";
@@ -34,6 +34,7 @@ export async function listOpenQuoteRequests() {
       id: s.quoteRequests.id,
       title: s.quoteRequests.title,
       description: s.quoteRequests.description,
+      quantity: s.quoteRequests.quantity,
       hubId: s.quoteRequests.hubId,
       hubName: s.hubs.name,
       lastPriceKobo: s.quoteRequests.lastPriceKobo,
@@ -47,13 +48,10 @@ export async function listOpenQuoteRequests() {
     })
     .from(s.quoteRequests)
     .leftJoin(s.hubs, eq(s.hubs.id, s.quoteRequests.hubId))
-    .where(eq(s.quoteRequests.state, "open"))
+    // An expired request is not something a supplier can act on, so it is
+    // not listed as though it were.
+    .where(and(eq(s.quoteRequests.state, "open"), gt(s.quoteRequests.expiresAt, new Date())))
     .orderBy(asc(s.quoteRequests.expiresAt));
-}
-
-export async function getQuoteRequest(id: string) {
-  const rows = await listOpenQuoteRequests();
-  return rows.find((r) => r.id === id) ?? null;
 }
 
 export async function submitQuote(input: {
@@ -84,26 +82,6 @@ export async function submitQuote(input: {
     .where(
       and(eq(s.quoteRequests.id, input.quoteRequestId), eq(s.quoteRequests.state, "open")),
     );
-}
-
-export async function listQuotesFor(quoteRequestId: string) {
-  const db = await getDb();
-  return db
-    .select({
-      id: s.quotes.id,
-      supplierId: s.quotes.supplierId,
-      supplierName: s.suppliers.name,
-      priceKobo: s.quotes.priceKobo,
-      holdDays: s.quotes.holdDays,
-      note: s.quotes.note,
-      isAwarded: s.quotes.isAwarded,
-      yieldAccuracyPct: s.suppliers.yieldAccuracyPct,
-      onTimePct: s.suppliers.onTimePct,
-    })
-    .from(s.quotes)
-    .innerJoin(s.suppliers, eq(s.suppliers.id, s.quotes.supplierId))
-    .where(eq(s.quotes.quoteRequestId, quoteRequestId))
-    .orderBy(asc(s.quotes.priceKobo));
 }
 
 /* ---------------------------------------------------------------------- */

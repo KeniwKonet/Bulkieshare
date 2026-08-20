@@ -2,10 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { OpsHeader } from "@/components/nav";
+import { GoodwillCreditForm, MemberRoleForm } from "@/components/ops-forms";
 import { BlockMemberButton } from "@/components/staff-forms";
 import { StatGrid } from "@/components/ui";
 import { requireOps } from "@/lib/auth/dal";
 import { getMemberDetail, recordAudit } from "@/lib/domain/ops";
+import { listHubs } from "@/lib/domain/pools";
 import { listMemberDisputes } from "@/lib/domain/support";
 import { formatKobo, formatKoboSigned } from "@/lib/money";
 import { formatPhone } from "@/lib/phone";
@@ -21,7 +23,10 @@ export default async function Member360Page({ params }: { params: Promise<{ id: 
   if (!detail) notFound();
 
   const { member, commitments, credit } = detail;
-  const disputes = await listMemberDisputes(member.id);
+  const [disputes, hubs] = await Promise.all([
+    listMemberDisputes(member.id),
+    listHubs(),
+  ]);
 
   // Looking at someone's full record is itself an auditable act.
   await recordAudit({
@@ -100,6 +105,25 @@ export default async function Member360Page({ params }: { params: Promise<{ id: 
             ))}
           </div>
         )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+          <div className="border border-ink bg-card p-4.5">
+            <div className="font-mono text-[11.5px] text-text-dim mb-3">ROLE</div>
+            <MemberRoleForm
+              memberId={member.id}
+              currentRole={member.role}
+              currentHubId={member.homeHubId}
+              hubs={hubs.map((h) => ({ id: h.id, name: h.name }))}
+              isSelf={member.id === ops.id}
+            />
+          </div>
+          <div className="border border-ink bg-card p-4.5">
+            <div className="font-mono text-[11.5px] text-text-dim mb-3">
+              GOODWILL CREDIT
+            </div>
+            <GoodwillCreditForm memberId={member.id} />
+          </div>
+        </div>
 
         <div className="flex flex-wrap gap-2 mt-5 items-center">
           <BlockMemberButton memberId={member.id} blocked={member.isBlocked} />

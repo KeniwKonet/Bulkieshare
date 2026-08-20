@@ -140,16 +140,15 @@ export async function seed(db: Db): Promise<void> {
       },
       {
         name: "Kogi Palm Millers Cooperative",
+        // Registered but not yet cleared: no bank details captured on the visit.
         contactName: "Ojo Adamu",
         contactPhone: "+2348055512004",
         bankName: "Zenith",
-        bankAccountNumber: "4455667788",
-        bankAccountName: "Kogi Palm Millers Coop",
         ordersDelivered: 4,
         yieldAccuracyPct: 96,
         onTimePct: 92,
         rejectRatePct: 3,
-        isApproved: true,
+        isApproved: false,
       },
       {
         name: "Kuje Livestock Aggregators",
@@ -704,17 +703,58 @@ export async function seed(db: Db): Promise<void> {
   /* Supply side                                                       */
   /* ---------------------------------------------------------------- */
 
+  // An open request with two livestock suppliers competing, so the compare and
+  // award screen shows a real decision rather than a formality: the cheaper
+  // quote holds for five days against a minimum of seven.
+  const [cattleRfq] = await db
+    .insert(s.quoteRequests)
+    .values({
+      title: "Cattle, 220kg or more, delivered to Kuje yard",
+      description:
+        "Demand from two Abuja pools that are already filling. We are not shopping around for fun.",
+      areaSlug: "abuja",
+      hubId: "kuje",
+      quantity: 2,
+      lastPriceKobo: N(268000),
+      depositPct: 40,
+      minHoldDays: 7,
+      state: "quoted",
+      expiresAt: addHours(now, 19),
+    })
+    .returning({ id: s.quoteRequests.id });
+
+  await db.insert(s.quotes).values([
+    {
+      quoteRequestId: cattleRfq.id,
+      supplierId: supplierId("Gwagwalada Livestock Aggregators"),
+      priceKobo: N(266500),
+      holdDays: 5,
+      note: "Cheapest I can do. Can only hold five days, the market is moving.",
+      createdAt: addHours(now, -6),
+    },
+    {
+      quoteRequestId: cattleRfq.id,
+      supplierId: supplierId("Kuje Livestock Aggregators"),
+      priceKobo: N(271500),
+      holdDays: 14,
+      note: "Same quality you took last month. Holds a fortnight.",
+      createdAt: addHours(now, -11),
+    },
+  ]);
+
+  // A second request nobody has replied to yet, tied to a real pool.
   await db.insert(s.quoteRequests).values({
-    title: "2 head of cattle, 220kg+, delivered to Kuje yard",
-    description:
-      "This is demand from two Abuja pools that are already filling. We are not shopping around for fun.",
+    title: "Rice, 50kg long grain",
+    description: "For the Karu cooperative pool. Delivery to Karu hub.",
     areaSlug: "abuja",
-    hubId: "kuje",
-    lastPriceKobo: N(268000),
-    depositPct: 40,
+    hubId: "karu",
+    poolId: "a-2231",
+    quantity: 14,
+    lastPriceKobo: N(58000),
+    depositPct: 30,
     minHoldDays: 7,
     state: "open",
-    expiresAt: addHours(now, 19),
+    expiresAt: addDays(now, 2),
   });
 
   await db.insert(s.purchaseOrders).values([

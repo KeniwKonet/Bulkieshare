@@ -15,6 +15,13 @@
       "when": 1786764838509,
       "tag": "0001_add_auth_user_id",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787204598279,
+      "tag": "0002_rfq_pool_and_quantity",
+      "breakpoints": true
     }
   ]
 }

@@ -5,15 +5,28 @@ import { OpsHeader } from "@/components/nav";
 import { ResolveDisputeForm } from "@/components/staff-forms";
 import { GridTable } from "@/components/ui";
 import { requireOps } from "@/lib/auth/dal";
-import { listOpenDisputes } from "@/lib/domain/support";
+import { listAllDisputes, listOpenDisputes } from "@/lib/domain/support";
 import { formatEventStamp } from "@/lib/time";
 
 export const metadata = { title: "Disputes" };
 
-export default async function DisputesPage() {
+export default async function DisputesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ show?: string }>;
+}) {
   await requireOps();
+  const { show } = await searchParams;
 
-  const disputes = await listOpenDisputes();
+  // Closed disputes are the record of how we behaved, so they stay readable.
+  const showAll = show === "all";
+  const [disputes, everything] = await Promise.all([
+    showAll ? listAllDisputes() : listOpenDisputes(),
+    listAllDisputes(),
+  ]);
+  const resolved = everything.filter(
+    (d) => d.state === "resolved" || d.state === "rejected",
+  );
   const breaching = disputes.filter((d) => d.breaching);
 
   // Whichever is closest to breaching gets the full treatment at the top.
@@ -26,8 +39,26 @@ export default async function DisputesPage() {
       <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8">
         <div className="flex justify-between items-center mb-5 flex-wrap gap-2">
           <h1 className="font-display text-[26px] tracking-tight">
-            Disputes · {disputes.length} open
+            Disputes · {showAll ? `${disputes.length} all time` : `${disputes.length} open`}
           </h1>
+          <span className="flex gap-2">
+            <Link
+              href="/admin/disputes"
+              className={`font-mono text-[11.5px] px-2.5 py-1.5 border ${
+                showAll ? "border-rule" : "bg-ink text-paper border-ink"
+              }`}
+            >
+              OPEN
+            </Link>
+            <Link
+              href="/admin/disputes?show=all"
+              className={`font-mono text-[11.5px] px-2.5 py-1.5 border ${
+                showAll ? "bg-ink text-paper border-ink" : "border-rule"
+              }`}
+            >
+              ALL {everything.length}
+            </Link>
+          </span>
           {breaching.length > 0 && (
             <span className="font-mono text-[11.5px] text-rust-dark">
               {breaching.length} BREACHING SLA
@@ -100,6 +131,8 @@ export default async function DisputesPage() {
 
         <p className="text-[14.5px] leading-relaxed text-text-dim mt-4">
           Above a 5% dispute rate at any hub we stop opening pools there until we know why.
+          {resolved.length > 0 &&
+            ` ${resolved.length} have been closed so far.`}
         </p>
       </div>
     </div>

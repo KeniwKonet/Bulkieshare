@@ -132,9 +132,10 @@ app/
   groups/...               coordinator dashboard, roster, members, fees, pool builder
   supply/...               supplier portal, quotes, orders, payouts, scorecard
   hub/...                  hub agent handover tool
-  admin/...                ops back office: pools, payments, refunds, disputes,
-                           reconciliation, members, suppliers, cooperatives,
-                           hubs, areas, audit
+  admin/                   ops home: what needs a person today
+  admin/procurement/...    request quotes, compare them, award, issue the PO
+  admin/...                pools, payments, refunds, disputes, reconciliation,
+                           members, suppliers, cooperatives, hubs, areas, audit
   actions/                 Server Actions, grouped by audience
   api/                     Paystack webhook, data export, report CSV
   api/v1/handovers         bearer-token sync for the offline hub agent tool
@@ -160,6 +161,27 @@ drizzle/                   generated SQL migration
 - Payment settlement is **idempotent** — a replayed Paystack webhook creates no second commitment.
 - A payment whose reference we do not recognise becomes an **unmatched transfer** for ops rather
   than being dropped.
+
+## The buying chain
+
+The whole company is one chain, and every link has a screen:
+
+```
+pool funds → request quotes → suppliers quote → ops awards one
+  → purchase order + deposit → delivery → QC → balance paid
+```
+
+Awarding is the moment money is committed, so it happens in one transaction: the winning
+quote, the losing quotes, the request, the pool's supplier and a new purchase order all move
+together. A half-awarded request would leave a supplier believing they hold an order that does
+not exist.
+
+Two rules the chain enforces:
+
+- **Nothing can be awarded to a supplier we cannot pay.** Approval requires bank details, and
+  the award re-checks it at the moment it would create the obligation.
+- **A funded pool with nothing on order is surfaced everywhere** — the ops home, the buying
+  board and the pool's own page. Members have paid; that is the state that quietly goes wrong.
 
 ## Two sides of every relationship
 
@@ -188,6 +210,7 @@ npm run build         # production build
 npm run verify        # both suites below
 npm run verify:flow   # the money path
 npm run verify:admin  # supplier and cooperative administration
+npm run verify:procurement  # the buying chain
 ```
 
 `verify:flow` walks a member through reserve → pay → commit → name a slot → book a window →
@@ -196,3 +219,7 @@ over-reservation, webhook replay and double-refund protection.
 
 `verify:admin` covers the approval gate, partial edits not blanking captured bank details,
 portal-access grants, slug collisions, and coordinator handover in both directions.
+
+`verify:procurement` walks a request through quotes to an issued purchase order, asserting
+that an award values the order correctly, splits the deposit, refuses a supplier with no bank
+account, cannot happen twice, and settles the losing quotes rather than leaving them dangling.

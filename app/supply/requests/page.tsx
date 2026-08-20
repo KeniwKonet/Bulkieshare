@@ -39,7 +39,7 @@ export default async function QuoteRequestsPage() {
               <div key={q.id} className="border border-ink bg-card mb-5">
                 <div className="px-4.5 py-3.5 bg-rust text-white flex flex-wrap justify-between gap-2 font-mono text-[12px]">
                   <span>QUOTE REQUEST · {q.quoteCount} QUOTED SO FAR</span>
-                  <span>EXPIRES IN {formatSlaRemaining(q.expiresAt).toUpperCase()}</span>
+                  <span>{formatSlaRemaining(q.expiresAt).toUpperCase()} TO QUOTE</span>
                 </div>
                 <div className="p-5">
                   <h2 className="font-display text-[26px] sm:text-[28px] tracking-tight mb-1.5">

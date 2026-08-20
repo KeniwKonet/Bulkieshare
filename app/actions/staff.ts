@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { requireOps, requireRole } from "@/lib/auth/dal";
 import { publishAllocation } from "@/lib/domain/allocation";
+import { awardQuote, cancelQuoteRequest, createQuoteRequest } from "@/lib/domain/procurement";
 import { findByCollectionCode, recordHandover } from "@/lib/domain/commitments";
 import {
   addGroupMember,
@@ -19,15 +20,26 @@ import {
   suggestGroupSlug,
 } from "@/lib/domain/groups";
 import {
+  createHub,
   escalateTransfer,
   markTransferReturned,
   recordAudit,
+  setMemberRole,
+  suggestHubId,
+  updateHub,
   resolveTransferAsCredit,
   setAreaLive,
   setMemberBlocked,
 } from "@/lib/domain/ops";
-import { nextPoolCode, setPoolState, settleClosedPools, sweepExpiredHolds } from "@/lib/domain/pools";
 import {
+  getPool,
+  nextPoolCode,
+  setPoolState,
+  settleClosedPools,
+  sweepExpiredHolds,
+} from "@/lib/domain/pools";
+import {
+  grantCredit,
   markRefundPaid,
   refundUnderfilledPool,
   resolveDispute,
@@ -46,7 +58,7 @@ import {
 } from "@/lib/domain/supply";
 import { getDb } from "@/lib/db";
 import * as s from "@/lib/db/schema";
-import { nairaToKobo } from "@/lib/money";
+import { formatKobo, nairaToKobo } from "@/lib/money";
 import { normalisePhone } from "@/lib/phone";
 import { addDays } from "@/lib/time";
 import { fail, succeed, type FormState } from "./_state";
@@ -56,6 +68,11 @@ import { fail, succeed, type FormState } from "./_state";
  * of them starts with a role check — the routing that hides these screens is
  * convenience, not security.
  */
+
+/** Goodwill above this needs a second approver, so it is refused here. */
+const GOODWILL_CEILING_NAIRA = 50_000;
+
+type MemberRole = (typeof s.memberRoleEnum.enumValues)[number];
 
 /* ---------------------------------------------------------------------- */
 /* Hub agent                                                               */
@@ -675,4 +692,220 @@ export async function createPool(_state: FormState, formData: FormData): Promise
   await db.insert(s.poolEvents).values({ poolId: id, label: "Pool opened" });
 
   redirect(groupSlug ? `/groups/${groupSlug}/pools/${id}` : `/admin/pools`);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Ops: procurement                                                        */
+/* ---------------------------------------------------------------------- */
+
+const rfqSchema = z.object({
+  title: z.string().trim().min(3, "Say what you are buying."),
+  description: z.string().trim().optional(),
+  poolId: z.string().trim().optional(),
+  hubId: z.string().trim().optional(),
+  quantity: z.coerce.number().int().min(1, "At least one."),
+  lastPriceNaira: z.coerce.number().nonnegative().optional(),
+  depositPct: z.coerce.number().int().min(0).max(100),
+  minHoldDays: z.coerce.number().int().min(1).max(60),
+  closesInDays: z.coerce.number().int().min(1).max(60),
+});
+
+export async function raiseQuoteRequest(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const ops = await requireOps();
+
+  const parsed = rfqSchema.safeParse({
+    title: formData.get("title"),
+    description: formData.get("description") || undefined,
+    poolId: formData.get("poolId") || undefined,
+    hubId: formData.get("hubId") || undefined,
+    quantity: formData.get("quantity"),
+    lastPriceNaira: formData.get("lastPriceNaira") || undefined,
+    depositPct: formData.get("depositPct"),
+    minHoldDays: formData.get("minHoldDays"),
+    closesInDays: formData.get("closesInDays"),
+  });
+
+  if (!parsed.success) {
+    const first = parsed.error.issues[0];
+    return fail(first.message, { [String(first.path[0])]: first.message });
+  }
+
+  const d = parsed.data;
+
+  let areaSlug: string | null = null;
+  if (d.poolId) {
+    const pool = await getPool(d.poolId);
+    if (!pool) return fail("That pool no longer exists.");
+    areaSlug = pool.areaSlug;
+  }
+
+  const id = await createQuoteRequest({
+    title: d.title,
+    description: d.description,
+    poolId: d.poolId ?? null,
+    areaSlug,
+    hubId: d.hubId ?? null,
+    quantity: d.quantity,
+    lastPriceKobo: d.lastPriceNaira ? nairaToKobo(d.lastPriceNaira) : null,
+    depositPct: d.depositPct,
+    minHoldDays: d.minHoldDays,
+    expiresAt: addDays(new Date(), d.closesInDays),
+    actorId: ops.id,
+  });
+
+  redirect(`/admin/procurement/${id}`);
+}
+
+export async function awardQuoteAction(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const ops = await requireOps();
+  const result = await awardQuote(String(formData.get("quoteId") ?? ""), ops.id);
+  if (!result.ok) return fail(result.error);
+
+  refresh();
+  return succeed(
+    `${result.po} issued. ${formatKobo(result.depositKobo)} deposit is now due to the supplier.`,
+  );
+}
+
+export async function cancelRfq(_state: FormState, formData: FormData): Promise<FormState> {
+  const ops = await requireOps();
+  await cancelQuoteRequest(String(formData.get("quoteRequestId") ?? ""), ops.id);
+  refresh();
+  return succeed("Request closed. Suppliers can no longer quote on it.");
+}
+
+/* ---------------------------------------------------------------------- */
+/* Ops: hubs                                                               */
+/* ---------------------------------------------------------------------- */
+
+const hubSchema = z.object({
+  name: z.string().trim().min(2, "Give the hub a name people will recognise."),
+  areaSlug: z.string().trim().min(2, "Pick an area."),
+  address: z.string().trim().min(4, "Where is it?"),
+  landmark: z.string().trim().optional(),
+  windows: z.string().trim().optional(),
+  capacityPerHour: z.coerce.number().int().min(1).max(200),
+  notes: z.string().trim().optional(),
+});
+
+export async function addHub(_state: FormState, formData: FormData): Promise<FormState> {
+  const ops = await requireOps();
+
+  const parsed = hubSchema.safeParse({
+    name: formData.get("name"),
+    areaSlug: formData.get("areaSlug"),
+    address: formData.get("address"),
+    landmark: formData.get("landmark") || undefined,
+    windows: formData.get("windows") || undefined,
+    capacityPerHour: formData.get("capacityPerHour"),
+    notes: formData.get("notes") || undefined,
+  });
+
+  if (!parsed.success) {
+    const first = parsed.error.issues[0];
+    return fail(first.message, { [String(first.path[0])]: first.message });
+  }
+
+  const id = await suggestHubId(parsed.data.name);
+  await createHub({ ...parsed.data, id, actorId: ops.id });
+
+  redirect(`/admin/hubs/${id}`);
+}
+
+export async function editHub(_state: FormState, formData: FormData): Promise<FormState> {
+  const ops = await requireOps();
+  const capacity = Number(formData.get("capacityPerHour") ?? 0);
+
+  await updateHub(
+    String(formData.get("hubId") ?? ""),
+    {
+      name: String(formData.get("name") ?? "").trim() || undefined,
+      address: String(formData.get("address") ?? "").trim() || undefined,
+      landmark: String(formData.get("landmark") ?? "").trim() || undefined,
+      windows: String(formData.get("windows") ?? "").trim() || undefined,
+      capacityPerHour: capacity > 0 ? capacity : undefined,
+      notes: String(formData.get("notes") ?? "").trim() || undefined,
+    },
+    ops.id,
+  );
+
+  refresh();
+  return succeed("Saved.");
+}
+
+export async function setHubActive(_state: FormState, formData: FormData): Promise<FormState> {
+  const ops = await requireOps();
+  const active = formData.get("active") === "1";
+  await updateHub(String(formData.get("hubId") ?? ""), { isActive: active }, ops.id);
+  refresh();
+  return succeed(active ? "Hub reopened." : "Hub closed to new pools.");
+}
+
+/* ---------------------------------------------------------------------- */
+/* Ops: member administration                                              */
+/* ---------------------------------------------------------------------- */
+
+export async function changeMemberRole(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const ops = await requireOps();
+  const memberId = String(formData.get("memberId") ?? "");
+  const role = String(formData.get("role") ?? "") as MemberRole;
+
+  if (!(s.memberRoleEnum.enumValues as readonly string[]).includes(role)) {
+    return fail("That is not a role.");
+  }
+
+  if (memberId === ops.id && role !== "ops" && role !== "admin") {
+    return fail("You cannot take your own ops access away. Ask a colleague to do it.");
+  }
+
+  await setMemberRole(memberId, role, ops.id);
+
+  const hubId = String(formData.get("homeHubId") ?? "").trim();
+  if (role === "hub_agent" && hubId) {
+    const db = await getDb();
+    await db.update(s.members).set({ homeHubId: hubId }).where(eq(s.members.id, memberId));
+  }
+
+  refresh();
+  return succeed(`Role set to ${role.replace("_", " ")}.`);
+}
+
+export async function giveGoodwillCredit(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const ops = await requireOps();
+
+  const naira = Number(formData.get("amountNaira") ?? 0);
+  const reason = String(formData.get("reason") ?? "").trim();
+
+  if (!Number.isFinite(naira) || naira <= 0) return fail("How much?");
+  if (reason.length < 4) {
+    return fail("Say what this is for — the member reads it on their own ledger.");
+  }
+  if (naira > GOODWILL_CEILING_NAIRA) {
+    return fail(
+      `Anything above ${formatKobo(nairaToKobo(GOODWILL_CEILING_NAIRA))} needs a second approver.`,
+    );
+  }
+
+  await grantCredit({
+    memberId: String(formData.get("memberId") ?? ""),
+    label: "Goodwill credit",
+    detail: reason,
+    amountKobo: nairaToKobo(naira),
+    actorId: ops.id,
+  });
+
+  refresh();
+  return succeed(`${formatKobo(nairaToKobo(naira))} credited.`);
 }

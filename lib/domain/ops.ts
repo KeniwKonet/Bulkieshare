@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 
 import { getDb } from "../db";
 import * as s from "../db/schema";
@@ -334,4 +334,148 @@ export async function setAreaLive(slug: string, isLive: boolean, actorId?: strin
   const db = await getDb();
   await db.update(s.areas).set({ isLive }).where(eq(s.areas.slug, slug));
   await recordAudit({ actorId, actorLabel: "Ops desk", action: "area.updated", subject: slug, detail: { isLive } });
+}
+
+/* ---------------------------------------------------------------------- */
+/* Hubs                                                                    */
+/* ---------------------------------------------------------------------- */
+
+/**
+ * Hub ids are short slugs because they appear in URLs and in the mouths of hub
+ * agents ("the Kuje one"). Generated from the name, deduplicated.
+ */
+export async function suggestHubId(name: string): Promise<string> {
+  const base =
+    name
+      .toLowerCase()
+      .replace(/\bhub\b/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 24) || "hub";
+
+  const db = await getDb();
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const candidate = attempt === 0 ? base : `${base}-${attempt + 1}`;
+    const [taken] = await db
+      .select({ id: s.hubs.id })
+      .from(s.hubs)
+      .where(eq(s.hubs.id, candidate))
+      .limit(1);
+    if (!taken) return candidate;
+  }
+  return `${base}-${Date.now().toString(36)}`;
+}
+
+export async function createHub(input: {
+  id: string;
+  areaSlug: string;
+  name: string;
+  address: string;
+  landmark?: string;
+  windows?: string;
+  capacityPerHour: number;
+  notes?: string;
+  actorId?: string;
+}): Promise<void> {
+  const db = await getDb();
+  await db.insert(s.hubs).values({
+    id: input.id,
+    areaSlug: input.areaSlug,
+    name: input.name,
+    address: input.address,
+    landmark: input.landmark ?? "",
+    windows: input.windows ?? "",
+    capacityPerHour: input.capacityPerHour,
+    notes: input.notes,
+  });
+
+  await recordAudit({
+    actorId: input.actorId,
+    actorLabel: "Ops desk",
+    action: "hub.created",
+    subject: input.name,
+    detail: { hubId: input.id, areaSlug: input.areaSlug },
+  });
+}
+
+export async function updateHub(
+  id: string,
+  patch: {
+    name?: string;
+    address?: string;
+    landmark?: string;
+    windows?: string;
+    capacityPerHour?: number;
+    notes?: string;
+    isActive?: boolean;
+  },
+  actorId?: string,
+): Promise<void> {
+  const db = await getDb();
+
+  // Only overwrite what was supplied, so a partial edit cannot blank a field
+  // that somebody captured on a site visit.
+  const set = Object.fromEntries(
+    Object.entries(patch).filter(([, v]) => v !== undefined && v !== ""),
+  );
+  if (Object.keys(set).length === 0) return;
+
+  await db.update(s.hubs).set(set).where(eq(s.hubs.id, id));
+  await recordAudit({
+    actorId,
+    actorLabel: "Ops desk",
+    action: "hub.updated",
+    subject: id,
+    detail: { fields: Object.keys(set) },
+  });
+}
+
+/** Who works this hub, so ops can see whether it is actually staffed. */
+export async function listHubAgents(hubId: string) {
+  const db = await getDb();
+  return db
+    .select({
+      id: s.members.id,
+      name: s.members.name,
+      phone: s.members.phone,
+      lastSeenAt: s.members.lastSeenAt,
+    })
+    .from(s.members)
+    .where(and(eq(s.members.homeHubId, hubId), eq(s.members.role, "hub_agent")))
+    .orderBy(asc(s.members.name));
+}
+
+/* ---------------------------------------------------------------------- */
+/* Waitlist                                                                */
+/* ---------------------------------------------------------------------- */
+
+/**
+ * The people asking for an area we do not serve. Grouped by neighbourhood,
+ * because "340 people in Enugu" is not actionable but "61 of them in Independence
+ * Layout" tells you where to put the first hub.
+ */
+export async function listWaitlist(areaSlug: string) {
+  const db = await getDb();
+  return db
+    .select({
+      phone: s.waitlist.phone,
+      neighbourhood: s.waitlist.neighbourhood,
+      createdAt: s.waitlist.createdAt,
+    })
+    .from(s.waitlist)
+    .where(eq(s.waitlist.areaSlug, areaSlug))
+    .orderBy(desc(s.waitlist.createdAt));
+}
+
+export async function waitlistByNeighbourhood(areaSlug: string) {
+  const db = await getDb();
+  return db
+    .select({
+      neighbourhood: s.waitlist.neighbourhood,
+      people: sql<number>`count(*)::int`,
+    })
+    .from(s.waitlist)
+    .where(eq(s.waitlist.areaSlug, areaSlug))
+    .groupBy(s.waitlist.neighbourhood)
+    .orderBy(desc(sql`count(*)`));
 }

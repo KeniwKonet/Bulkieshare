@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminResourceTable } from "@/components/admin-resource-table";
 import { ToggleAreaButton } from "@/components/staff-forms";
 import { requireOps } from "@/lib/auth/dal";
@@ -18,7 +19,7 @@ export default async function AreasPage() {
       columns="1fr .8fr .6fr .7fr .8fr .9fr"
       headers={["AREA", "STATE", "HUBS", "POOLS", "WAITLIST", ""]}
       rows={areas.map((a) => [
-        a.label,
+        <Link key="a" href={`/admin/areas/${a.slug}`} className="underline font-semibold">{a.label}</Link>,
         <span key="s" className={a.isLive ? "text-green" : "text-text-dim"}>
           {a.isLive ? "live" : "not live"}
         </span>,

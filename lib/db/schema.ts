@@ -583,6 +583,10 @@ export const quoteRequests = pgTable("quote_requests", {
   description: text("description").notNull().default(""),
   areaSlug: text("area_slug").references(() => areas.slug),
   hubId: text("hub_id").references(() => hubs.id),
+  /** The pool whose demand this request exists to satisfy, when there is one. */
+  poolId: text("pool_id").references(() => pools.id),
+  /** How many units are being bought. Quoted prices are per unit. */
+  quantity: integer("quantity").notNull().default(1),
   lastPriceKobo: integer("last_price_kobo"),
   depositPct: integer("deposit_pct").notNull().default(40),
   minHoldDays: integer("min_hold_days").notNull().default(7),

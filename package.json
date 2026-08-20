@@ -15,7 +15,8 @@
     "dev:session": "tsx --env-file-if-exists=.env.local scripts/dev-session.ts",
     "storage:setup": "tsx --env-file-if-exists=.env.local scripts/storage-setup.ts",
     "verify:admin": "node --conditions=react-server --import tsx scripts/verify-admin.ts",
-    "verify": "npm run verify:flow && npm run verify:admin"
+    "verify": "npm run verify:flow && npm run verify:admin && npm run verify:procurement",
+    "verify:procurement": "node --conditions=react-server --import tsx scripts/verify-procurement.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.5",
